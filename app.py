@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, jsonify
 from firebase_manager import FirebaseManager
+import datetime
 
 class BookHarmonyServer:
     def __init__(self):
@@ -33,12 +34,13 @@ class BookHarmonyServer:
 
         # Cart Page
         self.app.add_url_rule('/cart', 'cart_page', self.cart_page)
-
-        # Add to Cart
         self.app.add_url_rule('/add_to_cart', '/add_to_cart', self.add_to_cart, methods=['POST'])
-
-        # Remove from Cart
         self.app.add_url_rule('/remove_from_cart', 'remove_from_cart', self.remove_from_cart, methods=['POST'])
+
+        # Orders Page
+        self.app.add_url_rule('/orders', 'orders_page', self.orders_page)
+        self.app.add_url_rule('/give_rate', 'give_rate', self.give_rate, methods=['POST'])
+
 
         # Logout
         self.app.add_url_rule('/logout', 'logout', self.logout)
@@ -130,9 +132,14 @@ class BookHarmonyServer:
         else:
             return jsonify({'message': 'Failed to remove book!'})
         
-
+    def orders_page(self):
+        if self.user is not None:
+            orders = self.manager.fetch_orders(self.user)
+            return render_template('orders.html', orders=orders)
+        else:
+            return render_template('login.html')
+        
     
-
     def logout(self):
         if self.user is not None:
             self.user = None

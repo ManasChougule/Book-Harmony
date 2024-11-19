@@ -23,6 +23,7 @@ class FirebaseManager:
 		sha_password = hashlib.sha256(password.encode()).hexdigest()
 		return sha_password
 	
+	
 	def register_user(self, email, password, fullname, address, phone, pincode, state, city):
 		try:
 			# Create user with email and password
@@ -62,12 +63,6 @@ class FirebaseManager:
 
 			if self.generate_sha_password(password) in data:
 				return user
-
-			print(f'[*] Data : {data}')
-			# If no exception is raised, the user exists
-			# Now, we try to sign in with the provided credentials
-			# user = auth.sign_in_with_email_and_password(email, password)
-			# Redirect to a success page
 		except Exception as e:
 			# Redirect back to the login page with an error message
 			print(f'[*] Error {e}')
@@ -103,6 +98,18 @@ class FirebaseManager:
 		ref.update(new_data)
 		return ref.get()
 	
+	def fetch_orders(self, user):
+		order_ref = db.reference('Users').child(user.uid).child('Orders')
+		orders = order_ref.get()
+		new_orders = {}
+		if orders:
+			for key, value in orders.items():
+				t_ref = db.reference('Delivery').child(key)
+				new_orders[key] = t_ref.get()
+			return new_orders
+		else:
+			return None
+	
 	def get_image(self, filename):
 		if os.path.exists(f'static/cover/{filename}'):
 			pass
@@ -126,3 +133,26 @@ class FirebaseManager:
 		user_ref.set({
 			'id': book_id
 		})
+		
+	def give_rate(self, user, bookId, bookRating):
+		book_ref = db.reference('Books').child(bookId).child('Ratings')
+		book_ref.update({
+			user.uid: bookRating
+		})
+
+		rating_ref = db.reference('Books').child(bookId).child('bookrating')
+		if rating_ref.get():
+			rating = rating_ref.get()
+
+			rating_avg = ((int(bookRating) + int(rating)) / 2)
+			print(f'[*] Book Rating {bookId} : {rating_avg}')
+
+			rating_ref = db.reference('Books').child(bookId)
+			rating_ref.update({
+				'bookrating': rating_avg
+			})
+		else:
+			rating_ref = db.reference('Books').child(bookId)
+			rating_ref.update({
+				'bookrating': bookRating
+			})

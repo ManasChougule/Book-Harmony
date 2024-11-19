@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Orders</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open Sans">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+
+<style>
+    h1,h3,h4,h5,h6 {font-family: "Oswald"}
+
+    body {
+        font-family: "Open Sans";
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+
+    nav {
+        background-image: url('/static/images/head.jpg');
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+    }
+
+    nav a {
+        float: left;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 24px 34px;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    nav h2 {
+        float: right;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 24px 34px;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    nav a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+
+    nav h2 {
+        float: right;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 34px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .main-div {
+        width: auto;
+        height: auto;
+        background-color:  #fbfcfc;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+
+        margin: 20px;
+        padding: 20px;
+    }
+
+    footer {
+        background-color: #283747;
+        color: white;
+        text-align: center;
+        padding: 50px;
+        bottom: 0;
+        width: 100%;
+    }
+
+    footer p {
+        margin: 0;
+    }
+
+    /* Style for expertise item container */
+    .expertise-item {
+        border: 1px solid #ccc;
+        padding: 10px;
+        display: flex;
+        margin: 20px;
+    }
+
+    /* Style for book cover image */
+    .custom-icon {
+        width: 100px; /* Adjust width as needed */
+        height: auto; /* Maintain aspect ratio */
+        margin-right: 20px;
+    }
+
+    /* Style for book info container */
+    .book-info {
+        flex: 1; /* Take remaining space */
+    }
+
+    /* Style for book title */
+    .book-info h2 {
+        margin: 0;
+        font-size: 1.2em;
+        color: #333;
+    }
+
+    /* Style for author */
+    .book-info .author {
+        color: #666;
+    }
+
+    /* Style for price */
+    .book-info .price {
+        font-weight: bold;
+    }
+
+    /* Style for location */
+    .book-info .location {
+        color: #666;
+    }
+
+
+    /* Styles for the order container */
+    .order-container {
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: white;
+    }
+
+    /* Styles for the book list */
+    .book-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    /* Styles for each book item */
+    .book-item {
+        border-bottom: 1px solid #eee;
+        padding: 10px 0;
+    }
+
+    /* Styles for the book cover image */
+    .book-cover {
+        width: 10%; /* Adjust as needed */
+        height: auto; /* Maintain aspect ratio */
+        margin-right: 10px;
+        float: left;
+    }
+
+    /* Styles for book details */
+    .book-details {
+        margin-left: 120px; /* Ensure space for the cover image */
+    }
+
+    /* Clear floating elements */
+    .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+
+    .rating {
+        font-size: 34px;
+    }
+
+    .rating select {
+        border: none;
+        background-color: transparent;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        padding: 10px;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .rating option {
+        background-image: url('/static/images/star.png'); /* Image for the filled star */
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .rating option:checked {
+        background-image: none; /* Remove image for unselected options */
+    }
+
+    .star-img {
+        background-image: url('/static/images/star.png'); /* Image for the filled star */
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .progress-bar {
+        width: 30%;
+        height: auto;
+    }
+
+    .placed-bar {
+        width: 170px;
+        height: 150px;
+    }
+
+</style>
+
+</head>
+<body>
+
+    <nav>
+        <h2><b>Book - Harmony</b></h2>
+        <a href="/">Home</a>
+        <a href="dashboard">Dashboard</a>
+        <a href="cart">View Cart</a>
+        <a href="mybooks">My Books</a>
+        <a href="orders">My Orders</a>
+        <a href="purchase">My Sold Books</a>
+    </nav>
+
+    <div class="main-div">
+        <h1>My Orders</h1>
+        {% if orders %}
+            {% for order_id, order_data in orders.items() %}
+            <div class="order-container">
+                <h3>Purchased on, {{ order_data.time }}</h3>
+                <p>Order ID: {{ order_id }}</p>
+                <p>Amount: {{ order_data.amount }}</p>
+                <h4>Books:</h4>
+                <ul class="book-list">
+                    {% for book_id, book_info in order_data.books.items() %}
+                    <li class="book-item">
+                        <img src="static/cover/{{ book_info.filename }}" alt="{{ book_info.title }}" class="book-cover">
+                        <div class="book-details">
+                            <p>Title: {{ book_info.title }}</p>
+                            <p>Author: {{ book_info.author }}</p>
+                            <p>Price: {{ book_info.price }}</p>
+                        </div>
+
+                        <div class="rating">
+                            <select id="rating" name="rating">
+                                <option value="0" selected>☆☆☆☆☆</option>
+                                <option value="1" data-bookid="{{ book_id }}" data-rating="1">★☆☆☆☆</option>
+                                <option value="2" data-bookid="{{ book_id }}" data-rating="2">★★☆☆☆</option>
+                                <option value="3" data-bookid="{{ book_id }}" data-rating="3">★★★☆☆</option>
+                                <option value="4" data-bookid="{{ book_id }}" data-rating="4">★★★★☆</option>
+                                <option value="5" data-bookid="{{ book_id }}" data-rating="5">★★★★★</option>
+                            </select>
+                        </div>
+
+                        {% if order_data.deliver %}
+                            <img src="/static/images/delivered.png" class="progress-bar" alt="Progress Bar">
+                        {% else %}
+                            <img src="/static/images/placed.png" class="placed-bar" alt="Progress Bar">
+                        {% endif %}
+
+                        <div class="clearfix"></div><br>
+                        
+                        <span class='star-img'></span>
+                        
+                    </li>
+
+                    {% endfor %}
+                </ul>
+
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No orders here.</p>
+        {% endif %}
+    </div>
+
+    <script type="text/javascript">
+        let currentStep = 0;
+
+// Simulate automatic progress to "Delivered" after 3 seconds
+setTimeout(() => {
+  currentStep = 3;
+  updateProgressBar();
+}, 3000);
+
+function updateProgressBar() {
+  const progressBar = document.getElementById('progress-bar');
+  const steps = progressBar.querySelectorAll('.step');
+
+  steps.forEach((step, index) => {
+    if (index <= currentStep) {
+      step.classList.add('ordered');
+      step.classList.remove('shipped', 'out-for-delivery', 'delivered');
+    } else {
+      step.classList.remove('ordered', 'shipped', 'out-for-delivery', 'delivered');
+    }
+  });
+
+  progressBar.style.width = (currentStep / 3) * 100 + '%';
+}
+
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var ratingSelect = document.getElementById('rating');
+
+            ratingSelect.addEventListener('change', function() {
+                var bookId = this.options[this.selectedIndex].getAttribute('data-bookid');
+                var bookRating = this.value;
+
+                fetch('/give_rate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ bookId: bookId, bookRating: bookRating })
+                })
+                .then(response => response.json()) // Parse JSON response
+                .then(data => {
+                    console.log(data); // Optionally, handle response data
+                    alert('Thank you!');
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+            });
+        });
+    </script>
+
+    <footer>
+        <p>This is an interactive footer. Feel free to add your content here!</p>
+    </footer>
+
+</body>
+</html>
