@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open Sans">
+</head>
+<style>
+    h1,h3,h4,h5,h6 {font-family: "Oswald"}
+    body {
+        font-family: "Open Sans";
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+
+    nav {
+        background-image: url('/static/images/head.jpg');
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+    }
+
+    nav a{
+        float: left;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 24px 34px;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    nav a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+
+    nav h2 {
+        float: right;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 34px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .center-div {
+        display: flex;
+        justify-content: center; /* Horizontal centering */
+        align-items: center; /* Vertical centering */
+    }
+
+    .form-div {
+        width: 30%;
+        height: auto;
+        background-color:  #fbfcfc;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+        margin-top: 100px;
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    input[type="email"], input[type="password"] {
+        padding: 15px 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        width: 90%;
+        margin: 10px;
+    }
+
+    button {
+        background-color: #3498db;
+        color: #fff;
+        padding: 15px 20%;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin: 10px;
+    }
+
+    button:hover {
+        background-color: #2980b9;
+    }
+
+    .signup-link {
+        color: #666;
+        margin: 10px;
+    }
+
+    .signup-link a {
+        color: #3498db;
+        text-decoration: none;
+    }
+
+    .signup-link a:hover {
+        text-decoration: underline;
+    }
+</style>
+<body>
+
+    <nav>
+        <h2><b>Book - Harmony</b></h2>
+        <a href="/">Home</a>
+    </nav>
+
+    <div class="center-div">
+        <div class="form-div">
+
+            <h1>Login to Book Harmony</h1>
+
+            <form id="loginForm">
+                <input type="email" id="email" placeholder="Email" required><br>
+                <input type="password" id="password" placeholder="Password" required><br>
+                <button type="submit">Login</button>
+            </form>
+
+            <p class="signup-link">Don't have an account? <a href="register">Sign up</a></p>
+
+        </div>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: email, password: password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // document.getElementById('message').innerText = data.message;
+                if (data.message === 'Login successful') {
+                    // Redirect to dashboard or another page
+                    alert(data.message);
+                    window.location.href = '/dashboard'; // Change '/dashboard' to the desired URL
+                } else {
+                    alert(data.message);
+                }
+            });
+        });
+
+    </script>
+
+</body>
+</html>

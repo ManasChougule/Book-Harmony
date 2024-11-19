@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book-Harmony</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open Sans">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+
+<style>
+    h1,h3,h4,h5,h6 {font-family: "Oswald"}
+    body {
+        font-family: "Open Sans";
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+
+    nav {
+        background-image: url('/static/images/head.jpg');
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+    }
+
+    nav button {
+        background-color:Tomato;;
+        float: left;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 24px 34px;
+        text-decoration: none;
+        font-size: 18px;
+        border: none;
+    }
+
+    nav a{
+        float: left;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 24px 34px;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    nav h2 {
+        float: right;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 24px 34px;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    nav a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+
+    nav h2 {
+        float: right;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 34px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .content {
+        text-align: center;
+        margin: 50px auto;
+    }
+
+    .content img {
+        width: 130px;
+        margin: 20px;
+    }
+
+    .content h1 {
+        color:  #283747;
+        font-size: 36px;
+        font-style: bold;
+    }
+
+    .content p {
+        color:  #85929e;
+        font-size: 18px;
+    }
+
+    .container {
+        max-width: 80%;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .expertise {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    .expertise-item {
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        text-align: center;
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: auto;
+    }
+
+    .expertise-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .expertise-item .custom-icon {
+        height: 200px;
+        width: 170px;
+    }
+
+    .book-info {
+        flex: 1;
+    }
+        
+    p {
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .author {
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .price {
+        font-weight: bold;
+        color: #007bff;
+        margin-top: 5px;
+        font-size: 16px;
+    }
+
+    .rating {
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+
+    .rating::before {
+        content: '⭐';
+    }
+
+
+        /* Style for the search container */
+    .search-container {
+        position: relative;
+        margin-bottom: 20px; /* Adjust as needed */
+        margin: 20px auto;
+        width: 50%;
+    }
+
+    /* Style for the search input */
+    #searchInput {
+        padding: 12px 18px; /* Adjust padding as needed */
+        width: 100%; /* Adjust width as needed */
+        border: 1px solid #ccc; /* Adjust border as needed */
+        border-radius: 5px; /* Adjust border-radius as needed */
+        font-size: 16px;
+    }
+
+    /* Style for the search icon */
+    .search-icon {
+        position: absolute;
+        top: 50%;
+        right: 10px; /* Adjust right spacing as needed */
+        transform: translateY(-50%);
+        color: #777; /* Adjust color as needed */
+        cursor: pointer;
+    }
+
+    footer {
+        background-color: #283747;
+        color: white;
+        text-align: center;
+        padding: 50px;
+        bottom: 0;
+        width: 100%;
+    }
+
+    footer p {
+        margin: 0;
+    }
+
+    .add-to-cart {
+        padding: 8px 40px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: orange;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .add-to-cart:hover {
+        background-color: darkorange;
+    }
+
+    #sortOrder {
+        padding: 8px 40px 8px 16px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #fff;
+        color: #333;
+        cursor: pointer;
+    }
+
+    .location {
+        padding: 8px 40px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #fff;
+        color: #333;
+    }
+
+    .sold-out {
+      background-color: #ccc; /* Set background color */
+      color: #fff; /* Set text color */
+      border: none; /* Remove border */
+      padding: 10px 20px; /* Adjust padding */
+      font-size: 16px; /* Adjust font size */
+      cursor: not-allowed; /* Change cursor to indicate not clickable */
+    }
+
+    /* styles.css */
+    .recommended-books-section {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 10px;
+    }
+
+    .recommended-books-section h1 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .recommended-books {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+
+    .recommended-books-section .book-container {
+        width: 200px;
+        margin: 10px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .recommended-books-section .custom-icon {
+        width: 100%;
+        height: auto;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .recommended-books-section .book-info {
+        padding: 10px;
+    }
+
+    .recommended-books-section h2 {
+        margin: 0;
+        font-size: 18px;
+        color: #333;
+    }
+
+    .recommended-books-section .author {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #666;
+    }
+
+
+</style>
+
+</head>
+<body>
+
+    <nav>
+        <h2><b>Book - Harmony</b></h2>
+        {% if user %}
+            <a href="dashboard">Dashboard</a>
+            <a href="cart">View Cart</a>
+            <button id="logoutButton">Logout</button>
+        {% else %}
+            <a href="login">Login</a>
+            <a href="register">Register</a>
+        {% endif %}
+    </nav>
+
+    <script>
+        document.getElementById("logoutButton").addEventListener("click", function() {
+            // Display a confirmation dialog
+            var confirmation = confirm("Are you sure you want to logout?");
+            
+            // If the user confirms, redirect to the logout page
+            if (confirmation) {
+                window.location.href = "/logout";
+            }
+        });
+    </script>
+
+    {% if recommend %}
+    <div class="container">
+        <div class="recommended-books-section">
+            <h1>Recommended Books</h1>
+            <div class="recommended-books">
+                {% for book_id, book_data in recommend.items() %}
+                <div class="book-container">
+                    <img src="static/cover/{{ book_data.filename }}" alt="{{ book_data.title }}" class="custom-icon">
+                    <div class="book-info">
+                        <h2>{{ book_data.title }}</h2>
+                        <p class="author">{{ book_data.author }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="content">
+        <h1><b>Discover Your Next Chapter</b></h1>
+        <p>Where Every Book Holds a New Adventure..</p>
+    </div>
+
+    <div class="search-container">
+        <i class="fa fa-search search-icon" aria-hidden="true"></i>
+        <input type="text" id="searchInput" placeholder="Search for your next favorite book...">
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const searchInput = document.getElementById("searchInput");
+            const expertiseItems = document.querySelectorAll(".expertise-item");
+
+            searchInput.addEventListener("input", function() {
+                const searchTerm = searchInput.value.trim().toLowerCase();
+
+                expertiseItems.forEach(function(item) {
+                    const title = item.querySelector("h2").textContent.toLowerCase();
+                    const author = item.querySelector(".author").textContent.toLowerCase();
+                    const location = item.querySelector(".location").textContent.toLowerCase();
+                    const category = item.querySelector(".category").textContent.toLowerCase();
+
+                    if (title.includes(searchTerm) || author.includes(searchTerm) || location.includes(searchTerm) || category.includes(searchTerm)) {
+                        item.style.display = "block";
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+            });
+        });
+    </script>
+
+    <div class="search-container">
+        <select id="sortOrder">
+            <option value="0">Add Filter</option>
+            <option value="donatable">Donatable Books</option>
+            <option value="asc">Price Low to High</option>
+            <option value="desc">Price High to Low</option>
+        </select> 
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const expertiseContainer = document.querySelector(".expertise");
+            const expertiseItems = document.querySelectorAll(".expertise-item");
+            const sortOrderSelect = document.getElementById("sortOrder");
+
+            var selectElement = document.getElementById("sortOrder");
+            var optionZero = selectElement.querySelector('option[value="0"]');
+
+            sortOrderSelect.addEventListener("change", function() {
+                optionZero.remove();
+
+                const sortBy = this.value;
+
+                if (sortBy === "donatable") {
+                    // Remove existing items from the DOM
+                    expertiseItems.forEach(item => {
+                        const price = parseFloat(item.querySelector(".book-price").textContent.replace(" INR", ""));
+                        if (price !== 0) {
+                            item.remove();
+                        }
+                    });
+                    return; // Exit the function early
+                }
+
+                // Extract and sort items based on price
+                const sortedItems = Array.from(expertiseItems).sort((a, b) => {
+                    const priceA = parseFloat(a.querySelector(".book-price").textContent.replace(" INR", ""));
+                    const priceB = parseFloat(b.querySelector(".book-price").textContent.replace(" INR", ""));
+                    if(sortBy === "asc") {
+                        return priceA - priceB;
+                    } 
+
+                    if(sortBy === "desc") {
+                        return priceB - priceA;
+                    }
+                });
+
+                // Remove existing items from the DOM
+                expertiseItems.forEach(item => item.remove());
+
+                // Append sorted items back to the DOM
+                sortedItems.forEach(item => {
+                    expertiseContainer.appendChild(item);
+                });
+
+                moveSoldOutItemsToEnd();
+            });
+        });
+    </script>
+
+    <div class="container">
+        <div class="expertise" id="expertise-container">
+            {% for book_id, book_data in books.items() %}
+                <div class="expertise-item {% if book_data.purchase %}sold-item{% endif %}">
+                    <img src="static/cover/{{ book_data.filename }}" alt="{{ book_data.title }}" class="custom-icon">
+                    <div class="book-info">
+                        <h2>{{ book_data.title }}</h2>
+                        <p class="author">{{ book_data.author }}</p>
+
+                        {% if book_data.price == "0" %}
+                            <p class="donatable"><b>This book is for donation</b></p>
+                        {% endif %}
+                        
+                        <p class="price">₹<span class="book-price">{{ book_data.price }} </span>/-</p>
+                        <p class="location">{{ book_data.location }}</p>
+                        <p class="category"><i>{{ book_data.category }}</i></p>
+                        {% if book_data.bookrating %}
+                            <p class="rating"><b>{{ book_data.bookrating }}</b></p>
+                        {% endif %}
+                    </div>
+                    
+                    {% if book_data.purchase %}
+                        <button class="sold-out">Sold Out</button>
+                    {% else %}
+                        <button class="add-to-cart" data-bookid="{{ book_id }}"><span class="glyphicon glyphicon-shopping-cart"></span> Add </button>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var container = document.getElementById("expertise-container");
+            var items = container.getElementsByClassName("expertise-item");
+            var shuffledItems = Array.from(items).sort(function () {
+                return 0.5 - Math.random();
+            });
+            for (var i = 0; i < shuffledItems.length; i++) {
+                container.appendChild(shuffledItems[i]);
+            }
+        });
+    </script>
+
+    <script>
+        function moveSoldOutItemsToEnd() {
+            var expertise = document.querySelector('.expertise');
+            var soldOutItems = document.querySelectorAll('.expertise-item.sold-item');
+            soldOutItems.forEach(function(item) {
+                expertise.appendChild(item); // Append sold-out items to the end
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', moveSoldOutItemsToEnd);
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var addToCartButtons = document.querySelectorAll('.add-to-cart');
+            addToCartButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var bookId = this.getAttribute('data-bookid');
+                    // alert(bookId)
+                    fetch('/add_to_cart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ book_id: bookId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // document.getElementById('message').innerText = data.message;
+                        if (data.message === 'Error to add Book') {
+                            // Redirect to dashboard or another page
+                            alert('Please login to continue..');
+                            window.location.href = '/login'; // Change '/dashboard' to the desired URL
+                        } else {
+                            alert(data.message);
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+
+    <footer>
+        <p>This is an interactive footer. Feel free to add your content here!</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open Sans">
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+</head>
+<style>
+    h1,h3,h4,h5,h6 {font-family: "Oswald"}
+    body {
+        font-family: "Open Sans";
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+
+    nav {
+        background-image: url('/static/images/head.jpg');
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+    }
+
+    nav a{
+        float: left;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 24px 34px;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    nav a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+
+    nav h2 {
+        float: right;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 34px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .center-div {
+        display: flex;
+        justify-content: center; /* Horizontal centering */
+        align-items: center; /* Vertical centering */
+    }
+
+    .form-div {
+        width: 50%;
+        height: auto;
+        background-color:  #fbfcfc;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+        margin-top: 20px;
+        padding: 10px;
+    }
+
+    input[type="text"], textarea, input[type="number"], input[type="email"], input[type="password"], select {
+        padding: 15px 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        width: 90%;
+        margin: 10px;
+        font-family: "Open Sans";
+    }
+
+    button {
+        background-color: #3498db;
+        color: #fff;
+        padding: 15px 20%;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin: 10px;
+    }
+
+    button:hover {
+        background-color: #2980b9;
+    }
+
+    .login-link {
+        color: #666;
+        margin: 10px;
+    }
+
+    .login-link a {
+        color: #3498db;
+        text-decoration: none;
+    }
+
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+
+    #message {
+        color: red;
+        margin: 10px;
+    }
+</style>
+<body>
+
+    <nav>
+        <h2><b>Book - Harmony</b></h2>
+        <a href="/">Home</a>
+    </nav>
+
+    <div class="center-div">
+        <div class="form-div">
+            <h2>Registration Form</h2>
+            <form id="registerForm">
+                <input type="text" id="name" placeholder="Name" required><br>
+                <input type="email" id="email" placeholder="Email" required><br>
+                <input type="number" id="phone" placeholder="Phone" required><br>
+                <textarea id="address" placeholder="Address" required></textarea><br>
+                <input type="number" id="pincode" placeholder="Pincode" required><br>
+                <input type="password" id="password" placeholder="Password" required><br>
+
+                <select id="state" onchange="populateCities()">
+                  <option value="none">Select State</option>
+                  <option value="andhra_pradesh">Andhra Pradesh</option>
+                  <option value="arunachal_pradesh">Arunachal Pradesh</option>
+                  <option value="assam">Assam</option>
+                  <option value="bihar">Bihar</option>
+                  <option value="chhattisgarh">Chhattisgarh</option>
+                  <option value="goa">Goa</option>
+                  <option value="gujarat">Gujarat</option>
+                  <option value="haryana">Haryana</option>
+                  <option value="himachal_pradesh">Himachal Pradesh</option>
+                  <option value="jammu_kashmir">Jammu and Kashmir</option>
+                  <option value="jharkhand">Jharkhand</option>
+                  <option value="karnataka">Karnataka</option>
+                  <option value="kerala">Kerala</option>
+                  <option value="madhya_pradesh">Madhya Pradesh</option>
+                  <option value="maharashtra">Maharashtra</option>
+                  <option value="manipur">Manipur</option>
+                  <option value="meghalaya">Meghalaya</option>
+                  <option value="mizoram">Mizoram</option>
+                  <option value="nagaland">Nagaland</option>
+                  <option value="odisha">Odisha</option>
+                  <option value="punjab">Punjab</option>
+                  <option value="rajasthan">Rajasthan</option>
+                  <option value="sikkim">Sikkim</option>
+                  <option value="tamil_nadu">Tamil Nadu</option>
+                  <option value="telangana">Telangana</option>
+                  <option value="tripura">Tripura</option>
+                  <option value="uttar_pradesh">Uttar Pradesh</option>
+                  <option value="uttarakhand">Uttarakhand</option>
+                  <option value="west_bengal">West Bengal</option>
+                </select>
+
+                <select id="city">
+                  <option value="none">Select City</option>
+                </select>
+                <button type="submit">Register</button>
+            </form>
+
+            <p class="login-link">Already have an account? <a href="login">Login</a></p>
+
+            <p id="message"></p>
+
+        </div>
+    </div>
+
+    <script>
+      function populateCities() {
+        var stateSelect = document.getElementById("state");
+        var citySelect = document.getElementById("city");
+        var selectedState = stateSelect.value;
+        citySelect.innerHTML = ""; // Clear existing options
+
+        var cities = [];
+
+        if (selectedState === "andhra_pradesh") {
+          cities = ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Rajahmundry", "Tirupati", "Kakinada", "Anantapur", "Vizianagaram"];
+        } else if (selectedState === "arunachal_pradesh") {
+          cities = ["Itanagar", "Naharlagun", "Tawang", "Ziro", "Pasighat", "Bomdila", "Roing", "Tezu", "Daporijo", "Along"];
+        } else if (selectedState === "assam") {
+          cities = ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Nagaon", "Tinsukia", "Tezpur", "Karimganj", "Sivasagar", "Goalpara"];
+        } else if (selectedState === "bihar") {
+          cities = ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", "Darbhanga", "Arrah", "Begusarai", "Katihar", "Chhapra"];
+        } else if (selectedState === "chhattisgarh") {
+          cities = ["Raipur", "Bhilai", "Bilaspur", "Korba", "Durg", "Rajnandgaon", "Raigarh", "Jagdalpur", "Ambikapur", "Chirmiri"];
+        } else if (selectedState === "goa") {
+          cities = ["Panaji", "Margao", "Vasco da Gama", "Mapusa", "Ponda", "Salcete", "Bicholim", "Curchorem", "Sanquelim", "Canacona"];
+        } else if (selectedState === "gujarat") {
+          cities = ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Junagadh", "Gandhinagar", "Anand", "Nadiad"];
+        } else if (selectedState === "haryana") {
+          cities = ["Faridabad", "Gurgaon", "Panipat", "Ambala", "Yamunanagar", "Rohtak", "Hisar", "Karnal", "Sonipat", "Panchkula"];
+        } else if (selectedState === "himachal_pradesh") {
+          cities = ["Shimla", "Mandi", "Solan", "Dharamshala", "Kullu", "Manali", "Bilaspur", "Hamirpur", "Nahan", "Chamba"];
+        } else if (selectedState === "jammu_kashmir") {
+          cities = ["Srinagar", "Jammu", "Anantnag", "Baramulla", "Sopore", "Kathua", "Udhampur", "Rajouri", "Pulwama", "Kupwara"];
+        } else if (selectedState === "jharkhand") {
+          cities = ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro Steel City", "Deoghar", "Phusro", "Hazaribagh", "Giridih", "Ramgarh", "Medininagar"];
+        } else if (selectedState === "karnataka") {
+          cities = ["Bangalore", "Mysore", "Hubli", "Mangalore", "Belgaum", "Gulbarga", "Davanagere", "Bellary", "Shimoga", "Tumkur"];
+        } else if (selectedState === "kerala") {
+          cities = ["Thiruvananthapuram", "Kochi", "Kozhikode", "Kollam", "Thrissur", "Palakkad", "Alappuzha", "Kannur", "Kottayam", "Manjeri"];
+        } else if (selectedState === "madhya_pradesh") {
+          cities = ["Bhopal", "Indore", "Jabalpur", "Gwalior", "Ujjain", "Sagar", "Dewas", "Satna", "Ratlam", "Rewa"];
+        } else if (selectedState === "maharashtra") {
+          cities = ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad", "Thane", "Solapur", "Amravati", "Kolhapur", "Nanded"];
+        } else if (selectedState === "manipur") {
+          cities = ["Imphal", "Thoubal", "Lilong", "Bishnupur", "Churachandpur", "Kakching", "Sugnu", "Nambol", "Mayang Imphal", "Wangjing"];
+        } else if (selectedState === "meghalaya") {
+          cities = ["Shillong", "Tura", "Jowai", "Nongstoin", "Nongpoh", "Williamnagar", "Baghmara", "Mairang", "Resubelpara", "Amlarem"];
+        } else if (selectedState === "mizoram") {
+          cities = ["Aizawl", "Lunglei", "Saiha", "Champhai", "Serchhip", "Kolasib", "Lawngtlai", "Mamit", "Khawzawl", "Hnahthial"];
+        } else if (selectedState === "nagaland") {
+          cities = ["Kohima", "Dimapur", "Mokokchung", "Tuensang", "Wokha", "Zunheboto", "Phek", "Mon", "Chumukedima", "Pfutsero"];
+        } else if (selectedState === "odisha") {
+          cities = ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur", "Puri", "Balasore", "Bhadrak", "Baripada", "Bhawanipatna"];
+        } else if (selectedState === "punjab") {
+          cities = ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Hoshiarpur", "Mohali", "Batala", "Pathankot", "Moga"];
+        } else if (selectedState === "rajasthan") {
+          cities = ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Bikaner", "Ajmer", "Sikar", "Alwar", "Bhilwara", "Bharatpur"];
+        } else if (selectedState === "sikkim") {
+          cities = ["Gangtok", "Namchi", "Gyalshing", "Rangpo", "Jorethang", "Singtam", "Mangan", "Soreng", "Ravangla", "Naya Bazar"];
+        } else if (selectedState === "tamil_nadu") {
+          cities = ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tiruppur", "Erode", "Vellore", "Thoothukudi", "Thanjavur"];
+        } else if (selectedState === "telangana") {
+          cities = ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Ramagundam", "Khammam", "Mahbubnagar", "Nalgonda", "Adilabad", "Suryapet"];
+        } else if (selectedState === "tripura") {
+          cities = ["Agartala", "Dharmanagar", "Kailasahar", "Udaipur", "Belonia", "Khowai", "Teliamura", "Sonamura", "Bishalgarh", "Santirbazar"];
+        } else if (selectedState === "uttar_pradesh") {
+          cities = ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Varanasi", "Meerut", "Allahabad", "Bareilly", "Aligarh", "Moradabad"];
+        } else if (selectedState === "uttarakhand") {
+          cities = ["Dehradun", "Haridwar", "Roorkee", "Haldwani", "Rudrapur", "Kashipur", "Rishikesh", "Pithoragarh", "Ramnagar", "Manglaur"];
+        } else if (selectedState === "west_bengal") {
+          cities = ["Kolkata", "Asansol", "Siliguri", "Durgapur", "Bardhaman", "Malda", "Baharampur", "Habra", "Jalpaiguri", "Kharagpur"];
+        } else {
+          cities = ["Select State First"];
+        }
+
+        cities.forEach(function(city) {
+          var option = document.createElement("option");
+          option.text = city;
+          option.value = city;
+          citySelect.add(option);
+        });
+      }
+    </script>
+
+    <script>
+
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            var name = document.getElementById('name').value;
+            var email = document.getElementById('email').value;
+            var phone = document.getElementById('phone').value;
+            var address = document.getElementById('address').value;
+            var pincode = document.getElementById('pincode').value;
+            var password = document.getElementById('password').value;
+
+            var stateSelect = document.getElementById("state");
+            var citySelect = document.getElementById("city");
+
+            // Validate email format
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                document.getElementById('message').innerText = 'Invalid email format';
+                alert("Invalid email format");
+                return;
+            }
+
+            // Validate phone number (digits only)
+            var phoneRegex = /^\d+$/;
+            if (!phoneRegex.test(phone)) {
+                document.getElementById('message').innerText = 'Phone number must contain only digits';
+                alert("Phone number must contain only digits");
+                return;
+            }
+
+            // Validate password strength
+            var passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
+            if (!passwordRegex.test(password)) {
+                document.getElementById('message').innerText = 'Password must contain at least 8 characters including at least one uppercase letter, one lowercase letter, one digit, and one special character';
+                alert("Password must contain at least 8 characters including at least one uppercase letter, one lowercase letter, one digit, and one special character");
+                return;
+            }
+            
+            fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    name: name,
+                    email: email, 
+                    phone: phone,
+                    address: address,
+                    pincode: pincode,
+                    password: password,
+                    state: stateSelect,
+                    city: citySelect
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // document.getElementById('message').innerText = data.message;
+                if (data.message === 'User registered successfully!') {
+                    // Redirect to dashboard or another page
+                    alert(data.message);
+                    alert('Log in to continue..');
+                    window.location.href = '/login'; // Change '/dashboard' to the desired URL
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error registering:', error);
+            });
+        });
+        
+    </script>
+</body>
+</html>

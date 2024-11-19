@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User - Dashboard</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open Sans">
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+</head>
+<style>
+    h1,h3,h4,h5,h6 {font-family: "Oswald"}
+    body {
+        font-family: "Open Sans";
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+
+    nav {
+        background-image: url('/static/images/head.jpg');
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+    }
+
+    nav a{
+        float: left;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 24px 34px;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    nav a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+
+    nav h2 {
+        float: right;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 34px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .form-div {
+        width: auto;
+        height: auto;
+        background-color:  #fbfcfc;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+        margin: 20px;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    label {
+        font-weight: bold;
+        color: #333;
+    }
+    input[type="text"], select, input[type="number"], input[type="file"], textarea{
+        width: 70%;
+        padding: 15px 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        margin-bottom: 10px;
+        font-family: "Open Sans";
+    }
+
+    button {
+        background-color: #34495e;
+        width: 20%;
+        color: #fff;
+        padding: 15px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-top: 12px;
+    }
+
+    button:hover {
+        background-color: #5d6d7e;
+    }
+
+    .buyer-button {
+        background-color: #4CAF50;
+        width: auto;
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+    }
+
+    .buyer-button:hover {
+        background-color: #4CAF50;
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+    }
+
+</style>
+<body>
+
+    <nav>
+        <h2><b>Book - Harmony</b></h2>
+        <a href="/">Home</a>
+        <!-- If user is logged in -->
+        <a href="#bookSellForm">Sell Book</a>
+        <a href="cart">View Cart</a>
+        <a href="mybooks">My Books</a>
+        <a href="orders">My Orders</a>
+        <a href="purchase">My Sold Books</a>
+    </nav>
+
+    <div class="form-div">
+        <h2>User Profile</h2>
+        <p id="name">Name : </p>
+        <p id="email">Email : </p>
+        <p id="phone">Phone : </p>
+        <p id="address">Address : </p>
+    </div>
+
+    <script>
+
+        function fetchData() {
+            fetch('/get_data') // Fetch data from Flask server
+            .then(response => response.json()) // Parse JSON response
+            .then(data => {
+                // Display the data
+                document.getElementById('name').innerText = "Name : " + data.name;
+                document.getElementById('email').innerText = "Email : " + data.email;
+                document.getElementById('phone').innerText = "Phone : " + data.phone;
+                document.getElementById('address').innerText = "Address : " + data.address;
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+        }
+
+        // Call the function when the page loads
+        window.onload = fetchData;
+
+    </script>
+
+    <div class="form-div">
+        <h2>Chat with buyers</h2>
+        {% if buyers %}
+            {% for key, value in buyers.items() %}
+                <button class="buyer-button" data-userid="{{ key }}"><span class="chat-icon">🗨️</span>{{ value.name }} : {{ value.email }}</button>
+            {% endfor %}
+        {% else %}
+            <p class="no-buyers">No buyers available for chat at the moment.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var addToCartButtons = document.querySelectorAll('.buyer-button');
+            addToCartButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var buyerId = this.getAttribute('data-userid');
+                    // alert(bookId)
+                    fetch('/chat_buyer', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ buyer_id: buyerId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // document.getElementById('message').innerText = data.message;
+                        alert(data.message);
+                        if (data.message === 'Connected to buyer!') {
+                            // Redirect to dashboard or another page
+                            window.location.href = '/chat_with_buyer'; // Change '/dashboard' to the desired URL
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+
+    <div class="form-div">
+        <h2>Book Selling Form</h2>
+        <form id="bookSellForm">
+            <label for="title">Title:</label><br>
+            <input type="text" id="title" name="title" placeholder="Book Title" required><br>
+            
+            <label for="author">Author:</label><br>
+            <input type="text" id="author" name="author" placeholder="Book Author" required><br>
+
+            <label for="book_description">Book Description:</label><br>
+            <textarea id="book_description" name="book_description" rows="4" cols="50" placeholder="Enter book description here..."></textarea><br>
+            
+            <label for="price">Price:</label><br>
+            <input type="number" id="price" name="price" placeholder="Book Price in INR" required><br>
+            
+            <label for="location">Location:</label><br>
+            <select id="state" onchange="populateCities()">
+                  <option value="none">Select State</option>
+                  <option value="andhra_pradesh">Andhra Pradesh</option>
+                  <option value="arunachal_pradesh">Arunachal Pradesh</option>
+                  <option value="assam">Assam</option>
+                  <option value="bihar">Bihar</option>
+                  <option value="chhattisgarh">Chhattisgarh</option>
+                  <option value="goa">Goa</option>
+                  <option value="gujarat">Gujarat</option>
+                  <option value="haryana">Haryana</option>
+                  <option value="himachal_pradesh">Himachal Pradesh</option>
+                  <option value="jammu_kashmir">Jammu and Kashmir</option>
+                  <option value="jharkhand">Jharkhand</option>
+                  <option value="karnataka">Karnataka</option>
+                  <option value="kerala">Kerala</option>
+                  <option value="madhya_pradesh">Madhya Pradesh</option>
+                  <option value="maharashtra">Maharashtra</option>
+                  <option value="manipur">Manipur</option>
+                  <option value="meghalaya">Meghalaya</option>
+                  <option value="mizoram">Mizoram</option>
+                  <option value="nagaland">Nagaland</option>
+                  <option value="odisha">Odisha</option>
+                  <option value="punjab">Punjab</option>
+                  <option value="rajasthan">Rajasthan</option>
+                  <option value="sikkim">Sikkim</option>
+                  <option value="tamil_nadu">Tamil Nadu</option>
+                  <option value="telangana">Telangana</option>
+                  <option value="tripura">Tripura</option>
+                  <option value="uttar_pradesh">Uttar Pradesh</option>
+                  <option value="uttarakhand">Uttarakhand</option>
+                  <option value="west_bengal">West Bengal</option>
+            </select>
+
+            <select id="city">
+                    <option value="none">Select City</option>
+            </select>
+            
+            <label for="coverImg">Cover Image:</label><br>
+            <input type="file" id="coverImg" name="coverImg" accept="image/*" required><br>
+
+            <label for="book_category">Select Book Category:</label><br>
+            <select id="book_category" name="book_category">
+                    <option value="fiction">Fiction</option>
+                    <option value="nonfiction">Non-fiction</option>
+                    <option value="mystery_thriller">Mystery/Thriller</option>
+                    <option value="science_fiction_fantasy">Science Fiction/Fantasy</option>
+                    <option value="romance">Romance</option>
+                    <option value="self_help_personal_development">Self-help/Personal Development</option>
+                    <option value="jee">JEE (Joint Entrance Examination)</option>
+                    <option value="neet">NEET (National Eligibility cum Entrance Test)</option>
+                    <option value="programming_books">Programming Books</option>
+                    <option value="gate">GATE Books</option>
+                    <option value="competitive">Competitive Books</option>
+            </select><br>
+            
+            <button type="submit">Sell Book</button>
+        </form>
+    </div>
+
+    <script>
+      function populateCities() {
+        var stateSelect = document.getElementById("state");
+        var citySelect = document.getElementById("city");
+        var selectedState = stateSelect.value;
+        citySelect.innerHTML = ""; // Clear existing options
+
+        var cities = [];
+
+        if (selectedState === "andhra_pradesh") {
+          cities = ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Rajahmundry", "Tirupati", "Kakinada", "Anantapur", "Vizianagaram"];
+        } else if (selectedState === "arunachal_pradesh") {
+          cities = ["Itanagar", "Naharlagun", "Tawang", "Ziro", "Pasighat", "Bomdila", "Roing", "Tezu", "Daporijo", "Along"];
+        } else if (selectedState === "assam") {
+          cities = ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Nagaon", "Tinsukia", "Tezpur", "Karimganj", "Sivasagar", "Goalpara"];
+        } else if (selectedState === "bihar") {
+          cities = ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", "Darbhanga", "Arrah", "Begusarai", "Katihar", "Chhapra"];
+        } else if (selectedState === "chhattisgarh") {
+          cities = ["Raipur", "Bhilai", "Bilaspur", "Korba", "Durg", "Rajnandgaon", "Raigarh", "Jagdalpur", "Ambikapur", "Chirmiri"];
+        } else if (selectedState === "goa") {
+          cities = ["Panaji", "Margao", "Vasco da Gama", "Mapusa", "Ponda", "Salcete", "Bicholim", "Curchorem", "Sanquelim", "Canacona"];
+        } else if (selectedState === "gujarat") {
+          cities = ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Junagadh", "Gandhinagar", "Anand", "Nadiad"];
+        } else if (selectedState === "haryana") {
+          cities = ["Faridabad", "Gurgaon", "Panipat", "Ambala", "Yamunanagar", "Rohtak", "Hisar", "Karnal", "Sonipat", "Panchkula"];
+        } else if (selectedState === "himachal_pradesh") {
+          cities = ["Shimla", "Mandi", "Solan", "Dharamshala", "Kullu", "Manali", "Bilaspur", "Hamirpur", "Nahan", "Chamba"];
+        } else if (selectedState === "jammu_kashmir") {
+          cities = ["Srinagar", "Jammu", "Anantnag", "Baramulla", "Sopore", "Kathua", "Udhampur", "Rajouri", "Pulwama", "Kupwara"];
+        } else if (selectedState === "jharkhand") {
+          cities = ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro Steel City", "Deoghar", "Phusro", "Hazaribagh", "Giridih", "Ramgarh", "Medininagar"];
+        } else if (selectedState === "karnataka") {
+          cities = ["Bangalore", "Mysore", "Hubli", "Mangalore", "Belgaum", "Gulbarga", "Davanagere", "Bellary", "Shimoga", "Tumkur"];
+        } else if (selectedState === "kerala") {
+          cities = ["Thiruvananthapuram", "Kochi", "Kozhikode", "Kollam", "Thrissur", "Palakkad", "Alappuzha", "Kannur", "Kottayam", "Manjeri"];
+        } else if (selectedState === "madhya_pradesh") {
+          cities = ["Bhopal", "Indore", "Jabalpur", "Gwalior", "Ujjain", "Sagar", "Dewas", "Satna", "Ratlam", "Rewa"];
+        } else if (selectedState === "maharashtra") {
+          cities = ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad", "Thane", "Solapur", "Amravati", "Kolhapur", "Nanded"];
+        } else if (selectedState === "manipur") {
+          cities = ["Imphal", "Thoubal", "Lilong", "Bishnupur", "Churachandpur", "Kakching", "Sugnu", "Nambol", "Mayang Imphal", "Wangjing"];
+        } else if (selectedState === "meghalaya") {
+          cities = ["Shillong", "Tura", "Jowai", "Nongstoin", "Nongpoh", "Williamnagar", "Baghmara", "Mairang", "Resubelpara", "Amlarem"];
+        } else if (selectedState === "mizoram") {
+          cities = ["Aizawl", "Lunglei", "Saiha", "Champhai", "Serchhip", "Kolasib", "Lawngtlai", "Mamit", "Khawzawl", "Hnahthial"];
+        } else if (selectedState === "nagaland") {
+          cities = ["Kohima", "Dimapur", "Mokokchung", "Tuensang", "Wokha", "Zunheboto", "Phek", "Mon", "Chumukedima", "Pfutsero"];
+        } else if (selectedState === "odisha") {
+          cities = ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur", "Puri", "Balasore", "Bhadrak", "Baripada", "Bhawanipatna"];
+        } else if (selectedState === "punjab") {
+          cities = ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Hoshiarpur", "Mohali", "Batala", "Pathankot", "Moga"];
+        } else if (selectedState === "rajasthan") {
+          cities = ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Bikaner", "Ajmer", "Sikar", "Alwar", "Bhilwara", "Bharatpur"];
+        } else if (selectedState === "sikkim") {
+          cities = ["Gangtok", "Namchi", "Gyalshing", "Rangpo", "Jorethang", "Singtam", "Mangan", "Soreng", "Ravangla", "Naya Bazar"];
+        } else if (selectedState === "tamil_nadu") {
+          cities = ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tiruppur", "Erode", "Vellore", "Thoothukudi", "Thanjavur"];
+        } else if (selectedState === "telangana") {
+          cities = ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Ramagundam", "Khammam", "Mahbubnagar", "Nalgonda", "Adilabad", "Suryapet"];
+        } else if (selectedState === "tripura") {
+          cities = ["Agartala", "Dharmanagar", "Kailasahar", "Udaipur", "Belonia", "Khowai", "Teliamura", "Sonamura", "Bishalgarh", "Santirbazar"];
+        } else if (selectedState === "uttar_pradesh") {
+          cities = ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Varanasi", "Meerut", "Allahabad", "Bareilly", "Aligarh", "Moradabad"];
+        } else if (selectedState === "uttarakhand") {
+          cities = ["Dehradun", "Haridwar", "Roorkee", "Haldwani", "Rudrapur", "Kashipur", "Rishikesh", "Pithoragarh", "Ramnagar", "Manglaur"];
+        } else if (selectedState === "west_bengal") {
+          cities = ["Kolkata", "Asansol", "Siliguri", "Durgapur", "Bardhaman", "Malda", "Baharampur", "Habra", "Jalpaiguri", "Kharagpur"];
+        } else {
+          cities = ["Select State First"];
+        }
+
+        cities.forEach(function(city) {
+          var option = document.createElement("option");
+          option.text = city;
+          option.value = city;
+          citySelect.add(option);
+        });
+      }
+    </script>
+
+    <script>
+        document.getElementById('bookSellForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            // You can now use JavaScript to handle the form submission, like sending the data to your Flask server using fetch
+            // Example:
+            const formData = new FormData(this);
+            fetch('/sell_book', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Error in response');
+                }
+            })
+            .then(data => {
+                // Handle success response from server
+                console.log(data);
+                alert(data.message);
+                document.getElementById('bookSellForm').reset();
+            })
+            .catch(error => {
+                // Handle error
+                console.error('Error selling book:', error);
+                alert('Error listing book for sale. Please try again.' + error);
+            });
+        });
+    </script>
+
+</body>
+</html>
