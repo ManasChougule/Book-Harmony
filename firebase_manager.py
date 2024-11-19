@@ -18,12 +18,12 @@ class FirebaseManager:
 			'storageBucket': storage_bucket,
 			'databaseURL': database_url
 		})
-
-    def generate_sha_password(self, password):
-        sha_password = hashlib.sha256(password.encode()).hexdigest()
-        return sha_password
-
-    def register_user(self, email, password, fullname, address, phone, pincode, state, city):
+		
+	def generate_sha_password(self, password):
+		sha_password = hashlib.sha256(password.encode()).hexdigest()
+		return sha_password
+	
+	def register_user(self, email, password, fullname, address, phone, pincode, state, city):
 		try:
 			# Create user with email and password
 			user = auth.create_user(
@@ -75,16 +75,54 @@ class FirebaseManager:
 		return None
 
 	def get_user_data(self, user):
-
 		# Reference to your Firebase Realtime Database
 		ref = db.reference(f'Users/{user.uid}')
 
 		# Retrieve data
 		data = ref.get()
-
 		return data
-
 
 	def fetch_books(self):
 		ref = db.reference('Books')
 		return ref.get()
+	
+	def fetch_cart_books(self, user):
+		ref = db.reference('Users').child(user.uid).child('Cart')
+		return ref.get()
+	
+	def fetch_specific_books(self, book_id):
+		ref = db.reference('Books').child(book_id)
+		
+		seller_ref = db.reference('Books').child(book_id).child('seller')
+		seller_id = seller_ref.get()
+
+		seller_ref = db.reference('Users').child(seller_id).child('name')
+		seller_name = seller_ref.get()
+
+		new_data = {'seller_name': seller_name}
+		ref.update(new_data)
+		return ref.get()
+	
+	def get_image(self, filename):
+		if os.path.exists(f'static/cover/{filename}'):
+			pass
+		else:
+			bucket = storage.bucket()
+			# Download the image
+			blob = bucket.blob(filename)
+			blob.download_to_filename(f'static/cover/{filename}')
+			
+	def is_node_present(self, node_path):
+		ref = db.reference(node_path)
+		snapshot = ref.get()
+		return snapshot is not None
+	
+	def delete_node(self, path):
+		node_ref = db.reference(path)
+		node_ref.delete()
+	
+	def add_to_users_cart(self, user, book_id):
+		user_ref = db.reference('Users').child(user.uid).child('Cart').child(book_id)
+		user_ref.set({
+			'id': book_id
+		})

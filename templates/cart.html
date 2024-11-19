@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Cart</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open Sans">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+
+<style>
+    h1,h3,h4,h5,h6 {font-family: "Oswald"}
+    body {
+        font-family: "Open Sans";
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+
+    nav {
+        background-image: url('/static/images/head.jpg');
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+    }
+
+    nav a{
+        float: left;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 24px 34px;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    nav h2 {
+        float: right;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 24px 34px;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    nav a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+
+    nav h2 {
+        float: right;
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 34px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .main-div {
+        width: auto;
+        height: auto;
+        background-color:  #fbfcfc;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+
+        margin: 20px;
+        padding: 20px;
+    }
+
+    footer {
+        background-color: #283747;
+        color: white;
+        text-align: center;
+        padding: 50px;
+        bottom: 0;
+        width: 100%;
+    }
+
+    footer p {
+        margin: 0;
+    }
+
+    /* Style for expertise item container */
+    .expertise-item {
+        border: 1px solid #ccc;
+        padding: 10px;
+        display: flex;
+        margin: 20px;
+    }
+
+    /* Style for book cover image */
+    .custom-icon {
+        width: 200px; /* Adjust width as needed */
+        height: auto; /* Maintain aspect ratio */
+        margin-right: 20px;
+    }
+
+    /* Style for book info container */
+    .book-info {
+        flex: 1; /* Take remaining space */
+    }
+
+    /* Style for book title */
+    .book-info h2 {
+        margin: 0;
+        font-size: 1.2em;
+        color: #333;
+    }
+
+    /* Style for author */
+    .book-info .author {
+        color: #666;
+    }
+
+    /* Style for price */
+    .book-info .price {
+        font-weight: bold;
+    }
+
+    /* Style for location */
+    .book-info .location {
+        color: #666;
+    }
+
+    /* Style for the Pay Now button */
+    #check-out {
+      background-color: #4CAF50; /* Green */
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background-color 0.3s ease; /* Smooth transition effect */
+    }
+
+    #check-out:hover {
+      background-color: #45a049; /* Darker green */
+    }
+
+    .remove-button {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+    
+    .remove-button:hover {
+        background-color: #c0392b;
+    }
+
+    .chat-button {
+      background-color: #4CAF50; /* Green background */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+        margin-bottom: 10px;
+    }
+
+    /* Hover effect */
+    .chat-button:hover {
+      background-color: #45a049; /* Darker green */
+    }
+
+
+</style>
+
+</head>
+<body>
+
+    <nav>
+        <h2><b>Book - Harmony</b></h2>
+        <a href="/">Home</a>
+        <a href="dashboard">Dashboard</a>
+        <a href="cart">View Cart</a>
+        <a href="mybooks">My Books</a>
+        <a href="orders">My Orders</a>
+        <a href="purchase">My Sold Books</a>
+    </nav>
+
+    <div class="main-div">
+        <h1>Books Cart <span class="glyphicon glyphicon-shopping-cart"></span></h1>
+        {% if books %}
+            {% for book_id, book_data in books.items() %}
+                <div class="expertise-item">
+                    <img src="static/cover/{{ book_data.filename }}" alt="{{ book_data.title }}" class="custom-icon">
+                    <div class="book-info">
+                        <p class="book-id"><b>{{ book_id }}</b></p>
+                        <h2>{{ book_data.title }}</h2>
+                        <p class="author">{{ book_data.author }}</p>
+                        <p class="category">{{ book_data.category }}</p>
+                        <p class="desciption">{{ book_data.description }}</p>
+                        <p class="price"><b>₹ <span class="book-price">{{ book_data.price }}</span>/-</b></p>
+                        <p class="seller"><i>Seller Name: </i> {{ book_data.seller_name }}</p>
+                        <p class="location">{{ book_data.location }}</p>
+
+                        <button class="chat-button" data-bookid="{{ book_data.seller }}">Chat with the Seller</button><br>
+                        <button class="remove-button" data-bookid="{{ book_id }}">Remove</button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Your cart is empty.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var addToCartButtons = document.querySelectorAll('.chat-button');
+            addToCartButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var bookId = this.getAttribute('data-bookid');
+                    // alert(bookId)
+                    fetch('/chat_seller', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ seller_id: bookId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // document.getElementById('message').innerText = data.message;
+                        alert(data.message);
+                        if (data.message === 'Connected to seller!') {
+                            // Redirect to dashboard or another page
+                            window.location.href = '/chat_with_seller'; // Change '/dashboard' to the desired URL
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var addToCartButtons = document.querySelectorAll('.remove-button');
+            addToCartButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var bookId = this.getAttribute('data-bookid');
+                    // alert(bookId)
+                    fetch('/remove_from_cart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ book_id: bookId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // document.getElementById('message').innerText = data.message;
+                        if (data.message === 'Book removed from cart!') {
+                            // Redirect to dashboard or another page
+                            alert(data.message);
+                            window.location.href = '/cart'; // Change '/dashboard' to the desired URL
+                        } else {
+                            alert(data.message);
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+
+    <div class="main-div">
+
+        <!-- Total amount to pay -->
+        <div id="total-amount">
+            <h3>Total Amount: <span id="total">0</span> INR</h3>
+        </div>
+
+        <!-- Check out button -->
+        <button id="check-out">Check Out!</button>
+    </div>
+
+    <script>
+        document.getElementById("check-out").addEventListener("click", function() {
+            // Change the location to a new URL
+            window.location.href = "/payment";
+        });
+    </script>
+
+    <script>
+        // Calculate total amount to pay
+        function calculateTotal() {
+            var total = 0;
+            var items = document.querySelectorAll('.expertise-item');
+            items.forEach(function(item) {
+                var price = parseInt(item.querySelector('.book-price').textContent);
+                total += price;
+            });
+            return total;
+        }
+
+        var total = calculateTotal();
+
+        // Update total amount displayed on the page
+        function updateTotal() {
+            var totalAmount = calculateTotal();
+            document.getElementById('total').textContent = totalAmount;
+        }
+
+        // Initial update of total amount when the page loads
+        updateTotal();
+    </script>
+
+    <footer>
+        <p>This is an interactive footer. Feel free to add your content here!</p>
+    </footer>
+
+</body>
+</html>
