@@ -23,6 +23,9 @@ class FirebaseManager:
 		sha_password = hashlib.sha256(password.encode()).hexdigest()
 		return sha_password
 	
+	def generate_sha(self, password):
+		sha = hashlib.sha256(password.encode()).hexdigest()
+		return sha
 	
 	def register_user(self, email, password, fullname, address, phone, pincode, state, city):
 		try:
@@ -156,3 +159,64 @@ class FirebaseManager:
 			rating_ref.update({
 				'bookrating': bookRating
 			})
+			
+
+	def purchase_transaction(self, user, node, book_ids, amount, timestamp):
+		# Generate timestamp
+		data = {}
+
+		for book_id in book_ids:
+			ref = db.reference('Books').child(book_id)
+
+			# Update the node
+			new_data = {
+			    'purchase': True
+			}
+
+			ref.update(new_data)
+
+			seller_ref = db.reference('Users').child('Books').child(book_id)
+			seller_ref.update(new_data)
+
+			data[book_id] = ref.get()
+
+		user_ref = db.reference('Users').child(user.uid).child('Orders').child(node)
+		user_ref.set({
+			'amount': amount,
+			'id': node,
+			'books': data, 
+			'time': timestamp
+		})
+
+		seller_data = {}
+
+		for book_id in book_ids:
+			ref = db.reference('Books').child(book_id).child('seller')
+			seller_id = ref.get()
+
+			seller_ref = db.reference('Users').child(seller_id)
+			seller_data[seller_id] = seller_ref.get()
+
+			user_ref = db.reference('Users').child(user.uid).child('name')
+
+			seller_ref = db.reference('Users').child(seller_id).child('Purchase').child(node)
+			seller_ref.set({
+				'amount': amount,
+				'id': node,
+				'books': data, 
+				'time': timestamp,
+				'buyer_id': user.uid,
+				'buyer_name': user_ref.get()
+			})
+
+		user_ref = db.reference('Users').child(user.uid)
+
+		deliver_ref = db.reference('Delivery').child(node)
+		deliver_ref.set({
+			'amount': amount,
+			'id': node,
+			'books': data, 
+			'seller_data': seller_data, 
+			'time': timestamp,
+			'buyer': user_ref.get()
+		})

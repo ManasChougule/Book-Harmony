@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 17px;
+    padding: 8px;
+    background-color: #EBEDEF;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .row {
+    display: -ms-flexbox; /* IE10 */
+    display: flex;
+    -ms-flex-wrap: wrap; /* IE10 */
+    flex-wrap: wrap;
+    margin: 0 -16px;
+  }
+
+  .col-25 {
+    -ms-flex: 25%; /* IE10 */
+    flex: 25%;
+  }
+
+  .col-50 {
+    -ms-flex: 50%; /* IE10 */
+    flex: 50%;
+  }
+
+  .col-75 {
+    -ms-flex: 75%; /* IE10 */
+    flex: 75%;
+  }
+
+  .col-25,
+  .col-50,
+  .col-75 {
+    padding: 0 16px;
+  }
+
+  .container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  input[type=text] , select{
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+  }
+
+  input[type=text]:focus {
+    border-color: #4CAF50;
+  }
+
+  label {
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .icon-container {
+    margin-bottom: 20px;
+    padding: 7px 0;
+    font-size: 24px;
+  }
+
+  .btn {
+    background-color: #2196F3; /* Blue */
+    color: white;
+    padding: 18px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+  }
+
+  .btn:hover {
+    background-color: #1976D2; /* Darker blue on hover */
+  }
+
+  .cancel-btn {
+    background-color: #f44336; /* Red */
+    color: white;
+    padding: 18px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+  }
+
+  .cancel-btn:hover {
+    background-color: #d32f2f; /* Darker red on hover */
+  }
+
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 20px 0;
+  }
+
+  span.price {
+    float: right;
+    color: #555;
+  }
+
+  @media (max-width: 800px) {
+    .row {
+      flex-direction: column-reverse;
+    }
+    .col-25 {
+      margin-bottom: 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h2>Payment Gateway</h2>
+<div class="row">
+  <div class="col-75">
+    <div class="container">
+      
+        <div class="row">
+          <div class="col-50">
+            <h3>Billing Address</h3>
+            {% if user%}
+            <label for="fname"><i class="fa fa-user"></i> Full Name</label>
+            <input type="text" id="fname" name="firstname" value="{{ user.name }}" placeholder="John M. Doe" readonly>
+            <label for="email"><i class="fa fa-envelope"></i> Email</label>
+            <input type="text" id="email" name="email" value="{{ user.email }}" placeholder="john@example.com" readonly>
+            <label for="adr"><i class="fa fa-address-card-o"></i> Address</label>
+            <input type="text" id="adr" name="address" value="{{ user.address }}" placeholder="542 W. 15th Street">
+            <label for="state"><i class="fa fa-institution"></i> State</label>
+
+                  <select id="state" onchange="populateCities()">
+                  <option value="none">Select State</option>
+                  <option value="andhra_pradesh">Andhra Pradesh</option>
+                  <option value="arunachal_pradesh">Arunachal Pradesh</option>
+                  <option value="assam">Assam</option>
+                  <option value="bihar">Bihar</option>
+                  <option value="chhattisgarh">Chhattisgarh</option>
+                  <option value="goa">Goa</option>
+                  <option value="gujarat">Gujarat</option>
+                  <option value="haryana">Haryana</option>
+                  <option value="himachal_pradesh">Himachal Pradesh</option>
+                  <option value="jammu_kashmir">Jammu and Kashmir</option>
+                  <option value="jharkhand">Jharkhand</option>
+                  <option value="karnataka">Karnataka</option>
+                  <option value="kerala">Kerala</option>
+                  <option value="madhya_pradesh">Madhya Pradesh</option>
+                  <option value="maharashtra">Maharashtra</option>
+                  <option value="manipur">Manipur</option>
+                  <option value="meghalaya">Meghalaya</option>
+                  <option value="mizoram">Mizoram</option>
+                  <option value="nagaland">Nagaland</option>
+                  <option value="odisha">Odisha</option>
+                  <option value="punjab">Punjab</option>
+                  <option value="rajasthan">Rajasthan</option>
+                  <option value="sikkim">Sikkim</option>
+                  <option value="tamil_nadu">Tamil Nadu</option>
+                  <option value="telangana">Telangana</option>
+                  <option value="tripura">Tripura</option>
+                  <option value="uttar_pradesh">Uttar Pradesh</option>
+                  <option value="uttarakhand">Uttarakhand</option>
+                  <option value="west_bengal">West Bengal</option>
+                </select>
+            
+            {% endif %}
+
+            <div class="row">
+              <div class="col-50">
+                <label for="state">City</label>
+                <select id="city">
+                  <option value="none">Select City</option>
+                </select>
+              </div>
+              <div class="col-50">
+                <label for="zip">Zip</label>
+                <input type="text" id="zip" name="zip" placeholder="Enter the postal code" required>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+
+      <button id="pay-now" class="btn">Pay Now</button>
+      <button class="cancel-btn" id="cancel-payment">Cancel Payment</button>
+    </div>
+  </div>
+  <div class="col-25">
+    <div class="container">
+        {% if books %}
+          <h4>Cart <span class="price" style="color:black"><i class="fa fa-shopping-cart"></i> <b>{{ books|length }}</b></span></h4>
+          {% for book_id, book_data in books.items() %}
+            <div class="expertise-item"> 
+              <p><b><span class="book-id">{{ book_id }}</span></b> <a href="#">{{ book_data.title }}</a> <span class="price"><b>₹<span class="book-price">{{ book_data.price }}</span>/-</b></span></p>
+            </div>
+          {% endfor %}
+        {% endif %}
+      <hr>
+      <p>Total <span class="price" style="color:black"><b>₹<span id="total"></span>/-</b></span></p>
+    </div>
+  </div>
+</div>
+
+    <script>
+      function populateCities() {
+        var stateSelect = document.getElementById("state");
+        var citySelect = document.getElementById("city");
+        var selectedState = stateSelect.value;
+        citySelect.innerHTML = ""; // Clear existing options
+
+        var cities = [];
+
+        if (selectedState === "andhra_pradesh") {
+          cities = ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Rajahmundry", "Tirupati", "Kakinada", "Anantapur", "Vizianagaram"];
+        } else if (selectedState === "arunachal_pradesh") {
+          cities = ["Itanagar", "Naharlagun", "Tawang", "Ziro", "Pasighat", "Bomdila", "Roing", "Tezu", "Daporijo", "Along"];
+        } else if (selectedState === "assam") {
+          cities = ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Nagaon", "Tinsukia", "Tezpur", "Karimganj", "Sivasagar", "Goalpara"];
+        } else if (selectedState === "bihar") {
+          cities = ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", "Darbhanga", "Arrah", "Begusarai", "Katihar", "Chhapra"];
+        } else if (selectedState === "chhattisgarh") {
+          cities = ["Raipur", "Bhilai", "Bilaspur", "Korba", "Durg", "Rajnandgaon", "Raigarh", "Jagdalpur", "Ambikapur", "Chirmiri"];
+        } else if (selectedState === "goa") {
+          cities = ["Panaji", "Margao", "Vasco da Gama", "Mapusa", "Ponda", "Salcete", "Bicholim", "Curchorem", "Sanquelim", "Canacona"];
+        } else if (selectedState === "gujarat") {
+          cities = ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Junagadh", "Gandhinagar", "Anand", "Nadiad"];
+        } else if (selectedState === "haryana") {
+          cities = ["Faridabad", "Gurgaon", "Panipat", "Ambala", "Yamunanagar", "Rohtak", "Hisar", "Karnal", "Sonipat", "Panchkula"];
+        } else if (selectedState === "himachal_pradesh") {
+          cities = ["Shimla", "Mandi", "Solan", "Dharamshala", "Kullu", "Manali", "Bilaspur", "Hamirpur", "Nahan", "Chamba"];
+        } else if (selectedState === "jammu_kashmir") {
+          cities = ["Srinagar", "Jammu", "Anantnag", "Baramulla", "Sopore", "Kathua", "Udhampur", "Rajouri", "Pulwama", "Kupwara"];
+        } else if (selectedState === "jharkhand") {
+          cities = ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro Steel City", "Deoghar", "Phusro", "Hazaribagh", "Giridih", "Ramgarh", "Medininagar"];
+        } else if (selectedState === "karnataka") {
+          cities = ["Bangalore", "Mysore", "Hubli", "Mangalore", "Belgaum", "Gulbarga", "Davanagere", "Bellary", "Shimoga", "Tumkur"];
+        } else if (selectedState === "kerala") {
+          cities = ["Thiruvananthapuram", "Kochi", "Kozhikode", "Kollam", "Thrissur", "Palakkad", "Alappuzha", "Kannur", "Kottayam", "Manjeri"];
+        } else if (selectedState === "madhya_pradesh") {
+          cities = ["Bhopal", "Indore", "Jabalpur", "Gwalior", "Ujjain", "Sagar", "Dewas", "Satna", "Ratlam", "Rewa"];
+        } else if (selectedState === "maharashtra") {
+          cities = ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad", "Thane", "Solapur", "Amravati", "Kolhapur", "Nanded"];
+        } else if (selectedState === "manipur") {
+          cities = ["Imphal", "Thoubal", "Lilong", "Bishnupur", "Churachandpur", "Kakching", "Sugnu", "Nambol", "Mayang Imphal", "Wangjing"];
+        } else if (selectedState === "meghalaya") {
+          cities = ["Shillong", "Tura", "Jowai", "Nongstoin", "Nongpoh", "Williamnagar", "Baghmara", "Mairang", "Resubelpara", "Amlarem"];
+        } else if (selectedState === "mizoram") {
+          cities = ["Aizawl", "Lunglei", "Saiha", "Champhai", "Serchhip", "Kolasib", "Lawngtlai", "Mamit", "Khawzawl", "Hnahthial"];
+        } else if (selectedState === "nagaland") {
+          cities = ["Kohima", "Dimapur", "Mokokchung", "Tuensang", "Wokha", "Zunheboto", "Phek", "Mon", "Chumukedima", "Pfutsero"];
+        } else if (selectedState === "odisha") {
+          cities = ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur", "Puri", "Balasore", "Bhadrak", "Baripada", "Bhawanipatna"];
+        } else if (selectedState === "punjab") {
+          cities = ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Hoshiarpur", "Mohali", "Batala", "Pathankot", "Moga"];
+        } else if (selectedState === "rajasthan") {
+          cities = ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Bikaner", "Ajmer", "Sikar", "Alwar", "Bhilwara", "Bharatpur"];
+        } else if (selectedState === "sikkim") {
+          cities = ["Gangtok", "Namchi", "Gyalshing", "Rangpo", "Jorethang", "Singtam", "Mangan", "Soreng", "Ravangla", "Naya Bazar"];
+        } else if (selectedState === "tamil_nadu") {
+          cities = ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tiruppur", "Erode", "Vellore", "Thoothukudi", "Thanjavur"];
+        } else if (selectedState === "telangana") {
+          cities = ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Ramagundam", "Khammam", "Mahbubnagar", "Nalgonda", "Adilabad", "Suryapet"];
+        } else if (selectedState === "tripura") {
+          cities = ["Agartala", "Dharmanagar", "Kailasahar", "Udaipur", "Belonia", "Khowai", "Teliamura", "Sonamura", "Bishalgarh", "Santirbazar"];
+        } else if (selectedState === "uttar_pradesh") {
+          cities = ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Varanasi", "Meerut", "Allahabad", "Bareilly", "Aligarh", "Moradabad"];
+        } else if (selectedState === "uttarakhand") {
+          cities = ["Dehradun", "Haridwar", "Roorkee", "Haldwani", "Rudrapur", "Kashipur", "Rishikesh", "Pithoragarh", "Ramnagar", "Manglaur"];
+        } else if (selectedState === "west_bengal") {
+          cities = ["Kolkata", "Asansol", "Siliguri", "Durgapur", "Bardhaman", "Malda", "Baharampur", "Habra", "Jalpaiguri", "Kharagpur"];
+        } else {
+          cities = ["Select State First"];
+        }
+
+        cities.forEach(function(city) {
+          var option = document.createElement("option");
+          option.text = city;
+          option.value = city;
+          citySelect.add(option);
+        });
+      }
+    </script>
+
+    <script>
+        document.getElementById("cancel-payment").addEventListener("click", function() {
+            // Change the location to a new URL
+            window.location.href = "/cart";
+        });
+    </script>
+
+    <script>
+        // Calculate total amount to pay
+        function calculateTotal() {
+            var total = 0;
+            var items = document.querySelectorAll('.expertise-item');
+            items.forEach(function(item) {
+                var price = parseInt(item.querySelector('.book-price').textContent);
+                total += price;
+            });
+            return total;
+        }
+
+        function countTotalItems() {
+            return document.querySelectorAll('.expertise-item').length;
+        }
+
+        var total = calculateTotal();
+
+        // Update total amount displayed on the page
+        function updateTotal() {
+            var totalAmount = calculateTotal();
+            document.getElementById('total').textContent = totalAmount;
+        }
+
+        // Initial update of total amount when the page loads
+        updateTotal();
+    </script>
+
+    <script>
+        // Pay now button event listener
+        document.getElementById('pay-now').addEventListener('click', function() {
+            var totalAmount = calculateTotal();
+            var totalItems = countTotalItems();
+
+            // Check if total amount is zero
+            if (totalItems===0) {
+                alert("Please add items to your cart.");
+                return; // Stop further execution
+            }
+
+            totalAmount = totalAmount + totalItems*40
+
+            var confirmation = confirm('Total amount to pay with delivery charges: ' + totalAmount + ' INR. Confirm payment?');
+            if (confirmation) {
+                var bookIds = [];
+                var total = calculateTotal();
+                var bookElements = document.querySelectorAll('.book-id');
+                bookElements.forEach(function(element) {
+                    bookIds.push(element.textContent.trim());
+                });
+
+                // Send book IDs and total price to Flask server using AJAX
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/process_order', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            console.log('Book data sent successfully!');
+                            alert('Payment Successfully Done!');
+                            window.location.href = "/orders";
+                        } else {
+                            console.error('Failed to send book data.');
+                            alert('Error!');
+                        }
+                    }
+                };
+                xhr.send(JSON.stringify({ bookIds: bookIds, totalPrice: total }));
+            }
+        });
+    </script>
+
+</body>
+</html>
