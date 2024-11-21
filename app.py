@@ -32,6 +32,15 @@ class BookHarmonyServer:
         # User Dashboard Page
         self.app.add_url_rule('/dashboard', 'dashboard_page', self.dashboard_page)
 
+        # Sell Book
+        self.app.add_url_rule('/sell_book', 'sell_book', self.sell_book, methods=['POST'])
+
+        # Remove Book
+        self.app.add_url_rule('/remove_book', 'remove_book', self.remove_book, methods=['POST'])
+
+        # Update Book Price
+        self.app.add_url_rule('/update_price', 'update_price', self.update_price, methods=['POST'])
+
         # Cart Page
         self.app.add_url_rule('/cart', 'cart_page', self.cart_page)
         self.app.add_url_rule('/add_to_cart', '/add_to_cart', self.add_to_cart, methods=['POST'])
@@ -100,6 +109,47 @@ class BookHarmonyServer:
             return jsonify({'success': True, 'message': 'User registered successfully!'})
         else:
             return jsonify({'success': False, 'message': 'Error registering/User alredy exists!'}) 
+        
+    def sell_book(self):
+        # Get form data
+        title = request.form.get('title')
+        author = request.form.get('author')
+        price = request.form.get('price')
+        location = request.form.get('location')
+        category = request.form.get('book_category')
+        description = request.form.get('book_description')
+
+        cover_img = request.files['coverImg']  # Uploaded cover image file
+
+        # print(book)
+        if self.manager.add_book(self.user, title, author, price, location, description, category, cover_img):
+            print(f'[*] Book added to firebase')
+            return jsonify({'message': 'Book successfully listed for sale!'})
+        else:
+            return jsonify({'message': 'Failed to add Book!'})
+
+    def remove_book(self):
+        if self.user is not None:
+            data = request.json
+            book_id = data.get('book_id')
+            print(f'[*] Remove from List {book_id}')
+
+            self.manager.delete_node(f'Users/{self.user.uid}/Books/{book_id}')
+            self.manager.delete_node(f'Books/{book_id}')
+
+            return jsonify({'message': 'Book removed from sale!'})
+        else:
+            return jsonify({'message': 'Book not exists!'})
+
+    def update_price(self):
+        if self.user is not None:
+            data = request.json
+            book_id = data.get('book_id')
+            book_price = data.get('new_price')
+            self.manager.update_book_price(self.user, book_id, book_price)
+            return jsonify({'message': 'Price of book updated!'})
+        else:
+            return jsonify({'message': 'Book not exists!'})
         
     def cart_page(self):
         if self.user is not None:

@@ -1,7 +1,12 @@
 import firebase_admin
 from firebase_admin import credentials, auth, db, storage
 import hashlib
+import datetime
 import os
+
+import string
+import random
+
 from dotenv import load_dotenv
 
 # Load environment variables from the .env file
@@ -19,6 +24,10 @@ class FirebaseManager:
 			'databaseURL': database_url
 		})
 		
+	def generate_random_id(self):
+		chars = string.ascii_lowercase + string.ascii_uppercase + string.digits
+		return ''.join(random.choice(chars) for _ in range(6))
+
 	def generate_sha_password(self, password):
 		sha_password = hashlib.sha256(password.encode()).hexdigest()
 		return sha_password
@@ -79,6 +88,75 @@ class FirebaseManager:
 		# Retrieve data
 		data = ref.get()
 		return data
+	
+	def add_book(self, user, title, author, price, location, description, category, cover_img):
+		try:
+			bucket = storage.bucket()
+
+			cover_img.save(cover_img.filename)
+
+			print(f"[*] File Saved {cover_img}")
+
+			# Generate timestamp
+			timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+
+			# Define the new file name with timestamp
+			new_file_name = f"cover_image_{timestamp}.jpg"
+
+			blob = bucket.blob(new_file_name)
+			blob.upload_from_filename(cover_img.filename)
+			cover_url = blob.public_url
+
+			book_id = self.generate_random_id()
+
+			# Save additional user details to Realtime Database
+			book_ref = db.reference('Books').child(book_id)
+			book_ref.set({
+				'id': book_id,
+				'title': title,
+				'author': author,
+				'price': price,
+				'cover_url': cover_url,
+				'filename': new_file_name,
+				'location': location,
+				'description': description,
+				'category': category,
+				'seller' : user.uid
+			})
+
+			user_ref = db.reference('Users').child(user.uid).child('Books').child(book_id)
+			user_ref.set({
+				'id': book_id,
+				'title': title,
+				'author': author,
+				'price': price,
+				'cover_url': cover_url,
+				'filename': new_file_name,
+				'location': location,
+				'seller' : user.uid
+			})
+
+			os.remove(cover_img.filename)
+
+			return True
+
+		except Exception as err:
+			print(f'[*] Err {err}')
+		
+		return False
+	
+	def	update_book_price(self, user, book_id, book_price):
+		user_ref = db.reference('Users').child(user.uid).child('Books').child(book_id)
+
+		# Update the node
+		new_data = {
+		    'price': book_price
+		}
+
+		book_ref = db.reference('Books').child(book_id)
+
+		user_ref.update(new_data)
+		book_ref.update(new_data)
 
 	def fetch_books(self):
 		ref = db.reference('Books')
