@@ -41,6 +41,12 @@ class BookHarmonyServer:
         # Update Book Price
         self.app.add_url_rule('/update_price', 'update_price', self.update_price, methods=['POST'])
 
+        # My Books Page
+        self.app.add_url_rule('/mybooks', 'mybooks_page', self.mybooks_page)
+
+        # My Sold Books Page
+        self.app.add_url_rule('/sold_books', 'sold_books', self.sold_books_page)
+
         # Cart Page
         self.app.add_url_rule('/cart', 'cart_page', self.cart_page)
         self.app.add_url_rule('/add_to_cart', '/add_to_cart', self.add_to_cart, methods=['POST'])
@@ -150,6 +156,21 @@ class BookHarmonyServer:
             return jsonify({'message': 'Price of book updated!'})
         else:
             return jsonify({'message': 'Book not exists!'})
+        
+    def mybooks_page(self):
+        if self.user is not None:
+            books = self.manager.fetch_mybooks(self.user)
+            return render_template('mybooks.html', books=books)
+        else:
+            return render_template('login.html')
+        
+    def sold_books_page(self):
+        if self.user is not None:
+            orders = self.manager.fetch_purchase_orders(self.user)
+            #print(orders)
+            return render_template('purchase.html', orders=orders)
+        else:
+            return render_template('login.html')
         
     def cart_page(self):
         if self.user is not None:

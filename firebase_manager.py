@@ -166,6 +166,10 @@ class FirebaseManager:
 		ref = db.reference('Users').child(user.uid).child('Cart')
 		return ref.get()
 	
+	def fetch_mybooks(self, user):
+		ref = db.reference('Users').child(user.uid).child('Books')
+		return ref.get()
+	
 	def fetch_specific_books(self, book_id):
 		ref = db.reference('Books').child(book_id)
 		
@@ -190,6 +194,10 @@ class FirebaseManager:
 			return new_orders
 		else:
 			return None
+		
+	def fetch_purchase_orders(self, user):
+		ref = db.reference('Users').child(user.uid).child('Purchase')
+		return ref.get()
 	
 	def get_image(self, filename):
 		if os.path.exists(f'static/cover/{filename}'):

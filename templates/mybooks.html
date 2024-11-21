@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Cart</title>
+    <title>My Books</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open Sans">
 
@@ -98,7 +98,7 @@
 
     /* Style for book cover image */
     .custom-icon {
-        width: 200px; /* Adjust width as needed */
+        width: 10%; /* Adjust width as needed */
         height: auto; /* Maintain aspect ratio */
         margin-right: 20px;
     }
@@ -130,24 +130,36 @@
         color: #666;
     }
 
-    /* Style for the Pay Now button */
-    #check-out {
-      background-color: #4CAF50; /* Green */
-      border: none;
-      color: white;
-      padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      margin: 4px 2px;
-      cursor: pointer;
-      border-radius: 10px;
-      transition: background-color 0.3s ease; /* Smooth transition effect */
+    .book-info input {
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-bottom: 10px;
     }
 
-    #check-out:hover {
-      background-color: #45a049; /* Darker green */
+    /* Style for the Pay Now button */
+    #pay-now {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    #pay-now:hover {
+        background-color: #0056b3;
+    }
+
+    .sold-out {
+      background-color: #ccc; /* Set background color */
+      color: #fff; /* Set text color */
+      border: none; /* Remove border */
+      padding: 8px 20px; /* Adjust padding */
+      font-size: 16px; /* Adjust font size */
+      cursor: not-allowed; /* Change cursor to indicate not clickable */
     }
 
     .remove-button {
@@ -157,7 +169,7 @@
         padding: 10px 20px;
         border-radius: 5px;
         cursor: pointer;
-        font-size: 16px;
+        font-size: 14px;
         transition: background-color 0.3s;
     }
     
@@ -165,23 +177,21 @@
         background-color: #c0392b;
     }
 
-    .chat-button {
-      background-color: #4CAF50; /* Green background */
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: background-color 0.3s;
-        margin-bottom: 10px;
+    .update-button {
+      background-color: #3498db; /* Different color for update button */
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+      margin-bottom: 10px;
     }
 
-    /* Hover effect */
-    .chat-button:hover {
-      background-color: #45a049; /* Darker green */
+    .update-button:hover {
+      background-color: #2980b9; /* Darker color on hover */
     }
-
 
 </style>
 
@@ -199,68 +209,57 @@
     </nav>
 
     <div class="main-div">
-        <h1>Books Cart <span class="glyphicon glyphicon-shopping-cart"></span></h1>
-        {% if books %}
-            {% for book_id, book_data in books.items() %}
-                <div class="expertise-item">
-                    <img src="static/cover/{{ book_data.filename }}" alt="{{ book_data.title }}" class="custom-icon">
-                    <div class="book-info">
-                        <p class="book-id"><b>{{ book_id }}</b></p>
-                        <h2>{{ book_data.title }}</h2>
-                        <p class="author">{{ book_data.author }}</p>
-                        <p class="category">{{ book_data.category }}</p>
-                        <p class="desciption">{{ book_data.description }}</p>
-                        <p class="price"><b>₹ <span class="book-price">{{ book_data.price }}</span>/-</b></p>
-                        <p class="seller"><i>Seller Name: </i> {{ book_data.seller_name }}</p>
-                        <p class="location">{{ book_data.location }}</p>
 
-                        <button class="chat-button" data-bookid="{{ book_data.seller }}">Chat with the Seller</button><br>
-                        <button class="remove-button" data-bookid="{{ book_id }}">Remove</button>
-                    </div>
+        <h1>My Books</h1>
+            {% if books %}
+                <div class="expertise">
+                    {% for book_id, book_data in books.items() %}
+                        <div class="expertise-item {% if book_data.purchase %}sold-item{% endif %}">
+                            <img src="static/cover/{{ book_data.filename }}" alt="{{ book_data.title }}" class="custom-icon">
+                            <div class="book-info">
+                                <p class="book-id"><b>{{ book_id }}</b></p>
+                                <h2>{{ book_data.title }}</h2>
+                                <p class="author">{{ book_data.author }}</p>
+                                <p class="location">{{ book_data.location }}</p>
+
+                                {% if book_data.purchase %}
+                                    <p class="price">{{ book_data.price }} INR</p>
+                                    <br><button class="sold-out">Sold Out</button>
+                                {% else %}
+                                    <input type="text" value="{{ book_data.price }}" id="{{ book_id }}" name="new_price" placeholder="Book Price" required><br>
+                                    <button type="submit" class="update-button" data-bookid="{{ book_id }}" data-price="{{ book_data.price }}">Update Price</button><br>
+                                    <button class="remove-button" data-bookid="{{ book_id }}">Remove Book</button>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
-        {% else %}
-            <p>Your cart is empty.</p>
-        {% endif %}
+            {% else %}
+                <p>Your book list is empty.</p>
+            {% endif %}
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var addToCartButtons = document.querySelectorAll('.chat-button');
-            addToCartButtons.forEach(function(button) {
-                button.addEventListener('click', function() {
-                    var bookId = this.getAttribute('data-bookid');
-                    // alert(bookId)
-                    fetch('/chat_seller', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ seller_id: bookId })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        // document.getElementById('message').innerText = data.message;
-                        alert(data.message);
-                        if (data.message === 'Connected to seller!') {
-                            // Redirect to dashboard or another page
-                            window.location.href = '/chat_with_seller'; // Change '/dashboard' to the desired URL
-                        }
-                    });
-                });
+        function moveSoldOutItemsToEnd() {
+            var expertise = document.querySelector('.expertise');
+            var soldOutItems = document.querySelectorAll('.expertise-item.sold-item');
+            soldOutItems.forEach(function(item) {
+                expertise.appendChild(item); // Append sold-out items to the end
             });
-        });
-    </script>
+        }
 
+        window.addEventListener('DOMContentLoaded', moveSoldOutItemsToEnd);
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var addToCartButtons = document.querySelectorAll('.remove-button');
-            addToCartButtons.forEach(function(button) {
+            var removeBook = document.querySelectorAll('.remove-button');
+            removeBook.forEach(function(button) {
                 button.addEventListener('click', function() {
                     var bookId = this.getAttribute('data-bookid');
-                    // alert(bookId)
-                    fetch('/remove_from_cart', {
+                    //alert(bookId);
+                    fetch('/remove_book', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -270,10 +269,9 @@
                     .then(response => response.json())
                     .then(data => {
                         // document.getElementById('message').innerText = data.message;
-                        if (data.message === 'Book removed from cart!') {
-                            // Redirect to dashboard or another page
+                        if (data.message === 'Book removed from sale!') {
                             alert(data.message);
-                            window.location.href = '/cart'; // Change '/dashboard' to the desired URL
+                            window.location.href = '/mybooks';
                         } else {
                             alert(data.message);
                         }
@@ -283,47 +281,36 @@
         });
     </script>
 
-    <div class="main-div">
-
-        <!-- Total amount to pay -->
-        <div id="total-amount">
-            <h3>Total Amount: <span id="total">0</span> INR</h3>
-        </div>
-
-        <!-- Check out button -->
-        <button id="check-out">Check Out!</button>
-    </div>
-
     <script>
-        document.getElementById("check-out").addEventListener("click", function() {
-            // Change the location to a new URL
-            window.location.href = "/payment";
+        document.addEventListener('DOMContentLoaded', function() {
+            var removeBook = document.querySelectorAll('.update-button');
+            removeBook.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var bookId = this.getAttribute('data-bookid');
+                    var newPrice = document.getElementById(bookId).value;
+                    // alert(newPrice);
+                    fetch('/update_price', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ book_id: bookId, new_price: newPrice })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // document.getElementById('message').innerText = data.message;
+                        if (data.message === 'Price of book updated!') {
+                            alert(data.message);
+                            window.location.href = '/mybooks';
+                        } else {
+                            alert(data.message);
+                        }
+                    });
+                });
+            });
         });
     </script>
 
-    <script>
-        // Calculate total amount to pay
-        function calculateTotal() {
-            var total = 0;
-            var items = document.querySelectorAll('.expertise-item');
-            items.forEach(function(item) {
-                var price = parseInt(item.querySelector('.book-price').textContent);
-                total += price;
-            });
-            return total;
-        }
-
-        var total = calculateTotal();
-
-        // Update total amount displayed on the page
-        function updateTotal() {
-            var totalAmount = calculateTotal();
-            document.getElementById('total').textContent = totalAmount;
-        }
-
-        // Initial update of total amount when the page loads
-        updateTotal();
-    </script>
 
     <footer>
         <p>This is an interactive footer. Feel free to add your content here!</p>
