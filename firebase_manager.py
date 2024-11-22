@@ -95,8 +95,6 @@ class FirebaseManager:
 
 			cover_img.save(cover_img.filename)
 
-			print(f"[*] File Saved {cover_img}")
-
 			# Generate timestamp
 			timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -157,6 +155,10 @@ class FirebaseManager:
 
 		user_ref.update(new_data)
 		book_ref.update(new_data)
+		
+	def fetch_transaction(self):
+		ref = db.reference('Delivery')
+		return ref.get()
 
 	def fetch_books(self):
 		ref = db.reference('Books')
@@ -234,7 +236,6 @@ class FirebaseManager:
 			rating = rating_ref.get()
 
 			rating_avg = ((int(bookRating) + int(rating)) / 2)
-			print(f'[*] Book Rating {bookId} : {rating_avg}')
 
 			rating_ref = db.reference('Books').child(bookId)
 			rating_ref.update({
@@ -305,4 +306,10 @@ class FirebaseManager:
 			'seller_data': seller_data, 
 			'time': timestamp,
 			'buyer': user_ref.get()
+		})
+		
+	def mark_deliver(self, tid):
+		deliver_ref = db.reference('Delivery').child(tid)
+		deliver_ref.update({
+			'deliver': True
 		})

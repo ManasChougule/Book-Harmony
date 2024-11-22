@@ -1,6 +1,14 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, session, request, render_template, jsonify
 from firebase_manager import FirebaseManager
 import datetime
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from the .env file
+load_dotenv()
+
+app = Flask(__name__)
+app.secret_key = 'Manas'
 
 class BookHarmonyServer:
     def __init__(self):
@@ -11,11 +19,11 @@ class BookHarmonyServer:
         # New User
         self.user = None
 
-        # Seller Id
         self.seller = None
 
-        # Buyer Id
         self.buyer = None 
+
+        self.PASSWORD = os.getenv("ADMIN_PASSWORD")
 
     def setup_routes(self):
         # Index Page
@@ -46,6 +54,11 @@ class BookHarmonyServer:
 
         # My Sold Books Page
         self.app.add_url_rule('/sold_books', 'sold_books', self.sold_books_page)
+
+        # Delivery Netword Page
+        self.app.add_url_rule('/delivery', 'delivery_page', self.delivery_page)
+        self.app.add_url_rule('/verify_password', 'verify_password', self.verify_password, methods=['POST'])
+        self.app.add_url_rule('/mark_deliver', 'mark_deliver', self.mark_deliver, methods=['POST'])
 
         # Cart Page
         self.app.add_url_rule('/cart', 'cart_page', self.cart_page)
@@ -126,10 +139,7 @@ class BookHarmonyServer:
         description = request.form.get('book_description')
 
         cover_img = request.files['coverImg']  # Uploaded cover image file
-
-        # print(book)
         if self.manager.add_book(self.user, title, author, price, location, description, category, cover_img):
-            print(f'[*] Book added to firebase')
             return jsonify({'message': 'Book successfully listed for sale!'})
         else:
             return jsonify({'message': 'Failed to add Book!'})
@@ -138,8 +148,6 @@ class BookHarmonyServer:
         if self.user is not None:
             data = request.json
             book_id = data.get('book_id')
-            print(f'[*] Remove from List {book_id}')
-
             self.manager.delete_node(f'Users/{self.user.uid}/Books/{book_id}')
             self.manager.delete_node(f'Books/{book_id}')
 
@@ -167,10 +175,19 @@ class BookHarmonyServer:
     def sold_books_page(self):
         if self.user is not None:
             orders = self.manager.fetch_purchase_orders(self.user)
-            #print(orders)
             return render_template('purchase.html', orders=orders)
         else:
             return render_template('login.html')
+        
+    def delivery_page(self):
+        transactions = self.manager.fetch_transaction()
+        return render_template('delivery.html', transactions=transactions)
+    
+    def mark_deliver(self):
+        data = request.json
+        tid = data.get('tid')
+        self.manager.mark_deliver(tid)
+        return jsonify({'message': 'Marked as Delivered!'})
         
     def cart_page(self):
         if self.user is not None:
@@ -178,7 +195,6 @@ class BookHarmonyServer:
             new_data = {}
             if books:
                 for key, value in books.items():
-                    print(f'[*] Getting Books : {key}')
                     data = self.manager.fetch_specific_books(key)
                     new_data[key] = data
             return render_template('cart.html', books=new_data)
@@ -202,7 +218,6 @@ class BookHarmonyServer:
         if self.user is not None:
             data = request.json
             book_id = data.get('book_id')
-            print(f'[*] Remove from cart {book_id}')
             self.manager.delete_node(f'Users/{ self.user.uid }/Cart/{ book_id }')
             return jsonify({'message': 'Book removed from cart!'})
         else:
@@ -222,7 +237,6 @@ class BookHarmonyServer:
             new_data = {}
             if books:
                 for key, value in books.items():
-                    print(f'[*] Getting Books : {key}')
                     data = self.manager.fetch_specific_books(key)
                     new_data[key] = data
             return render_template('payment.html', books=new_data, user=user)
@@ -233,8 +247,6 @@ class BookHarmonyServer:
         data = request.json
         bookId = data.get('bookId')
         bookRating = data.get('bookRating')
-
-        print(f'[*] Rating {bookRating} for Book ID: {bookId}')
         self.manager.give_rate(self.user, bookId, bookRating)
         return jsonify({'message': 'Rating given!'})
 
@@ -262,6 +274,17 @@ class BookHarmonyServer:
     def run(self):
         self.app.run(port="8080", debug=True)
 
+
+    def verify_password(self):
+        data = request.json
+        input_password = data.get('password')
+
+        if input_password == self.PASSWORD:
+            return jsonify({'success': True, 'message': 'Password correct'})
+        else:
+            return jsonify({'success': False, 'message': 'Incorrect password'}), 401
+    
+    
 if __name__ == '__main__':
     server = BookHarmonyServer()
     server.run()

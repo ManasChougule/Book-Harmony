@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Information</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open Sans">
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+</head>
+<style>
+    h1,h3,h4,h5,h6 {font-family: "Oswald"}
+    body {
+        font-family: "Open Sans";
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+
+    /* Style for transaction details */
+    .transaction-container {
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+        padding: 20px;
+    }
+
+    .transaction-header {
+        font-weight: bold;
+    }
+
+    .book-details {
+        margin-left: 20px;
+    }
+
+    .book-details li {
+
+    }
+
+    /* Style for individual books */
+    .book-details li p {
+        margin: 5px 0;
+    }
+
+    .main-div {
+        width: auto;
+        height: auto;
+        background-color:  #fbfcfc;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .deliver-button {
+      background-color: #4CAF50; /* Green background */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+        margin-bottom: 10px;
+    }
+
+    /* Hover effect */
+    .deliver-button:hover {
+      background-color: #45a049; /* Darker green */
+    }
+
+    #password-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 10%;
+    }
+    #content {
+        display: none;
+    }
+    .hidden {
+        display: none;
+        color: red;
+    }
+    #error-message {
+        color: red;
+    }
+    input[type="password"] {
+        padding: 10px;
+        font-size: 16px;
+    }
+    button {
+        padding: 10px;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+    <div id="password-container">
+        <h2>Enter Password</h2>
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="checkPassword()">Submit</button>
+        <p id="error-message" class="hidden">Incorrect password, please try again.</p>
+    </div>
+
+        <div class="main-div" id="content">
+            <h1>Transaction Details</h1>
+            {% for transaction_id, transaction_data in transactions.items() %}
+            <div class="transaction-container">
+                <p class="transaction-header"><strong>Transaction ID:</strong> {{ transaction_id }}</p>
+                <p><strong>Amount:</strong> {{ transaction_data['amount'] }}</p>
+                <p><strong>Time:</strong> {{ transaction_data['time'] }}</p>
+
+                <p><strong>Buyer Name:</strong> {{ transaction_data.buyer.name }}</p>
+                <p><strong>Buyer Address:</strong> {{ transaction_data.buyer.address }}</p>
+
+                <p><strong>Seller Information:</strong></p>
+                <ul>
+                {% for seller_id, seller_data in transaction_data.seller_data.items() %}
+                    <li>
+                        <p><strong>Seller ID:</strong> {{ seller_id }}</p>
+                        <p><strong>Seller Name:</strong> {{ seller_data.name }}</p>
+                        <p><strong>Seller Address:</strong> {{ seller_data.address }}</p>
+                    </li>
+                {% endfor %}
+                </ul>
+
+                <p><strong>Books Purchased:</strong></p>
+                <ul class="book-details">
+                    {% for book_id, book_data in transaction_data['books'].items() %}
+                    <li>
+                        <p><strong>Title:</strong> {{ book_data['title'] }}</p>
+                        <p><strong>Author:</strong> {{ book_data['author'] }}</p>
+                        <p><strong>Price:</strong> {{ book_data['price'] }}</p>
+                        <p><strong>Seller:</strong> {{ book_data['seller'] }}</p>
+                    </li><br>
+                    {% endfor %}
+                </ul>
+
+                {% if transaction_data.deliver %}
+                    <p>Product Delivered</p>
+                {% else %}
+                    <button class="deliver-button" data-id="{{ transaction_id }}">Mark as Deliver</button>
+                {% endif %}
+
+            </div>
+            {% endfor %}
+        </div>
+
+    <script>
+        document.getElementById("password-container").style.display = "block";
+        document.getElementById("content").style.display = "none";
+
+        function checkPassword() {
+            const password = document.getElementById("password").value;
+            const errorMessage = document.getElementById("error-message");
+
+            fetch('http://127.0.0.1:8080/verify_password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("password-container").style.display = "none";
+                    document.getElementById("content").style.display = "block";
+                
+                } else {
+                    document.getElementById('error-message').classList.remove('hidden');
+                }
+            });
+        }
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var addToCartButtons = document.querySelectorAll('.deliver-button');
+            addToCartButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var tid = this.getAttribute('data-id');
+                    fetch('/mark_deliver', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ tid: tid })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                    });
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
