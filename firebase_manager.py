@@ -213,6 +213,20 @@ class FirebaseManager:
 			return chat_ref.get()
 		except:
 			return None
+
+	def fetch_order_books(self, user):
+		order_ref = db.reference('Users').child(user.uid).child('Orders')
+		orders = order_ref.get()
+		books = []
+		if orders:
+			for key, value in orders.items():
+				for book_id, book_data in value['books'].items():
+					books.append(book_data['category'])
+		return books
+
+	def fetch_category(self, user, bookId):
+		book_ref = db.reference('Books').child(bookId).child('category')
+		return book_ref.get()
 	
 	def get_image(self, filename):
 		if os.path.exists(f'static/cover/{filename}'):
@@ -356,12 +370,3 @@ class FirebaseManager:
 				filtered_books[book_id] = book_data[book_id]
 		return filtered_books
 	
-	def fetch_order_books(self, user):
-		order_ref = db.reference('Users').child(user.uid).child('Orders')
-		orders = order_ref.get()
-		books = []
-		if orders:
-			for key, value in orders.items():
-				for book_id, book_data in value['books'].items():
-					books.append(book_data['category'])
-		return books
