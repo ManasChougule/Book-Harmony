@@ -75,6 +75,16 @@ class BookHarmonyServer:
         # Process Order
         self.app.add_url_rule('/process_order', 'process_order', self.process_order, methods=['POST'])
 
+        # Chat with Seller
+        self.app.add_url_rule('/chat_with_seller', 'chat_with_seller', self.chat_with_seller_page)
+        self.app.add_url_rule('/chat_seller', 'chat_seller', self.chat_seller, methods=['POST'])
+
+        # Chat with Buyer
+        self.app.add_url_rule('/chat_with_buyer', 'chat_with_buyer', self.chat_with_buyer_page)
+        self.app.add_url_rule('/chat_buyer', 'chat_buyer', self.chat_buyer, methods=['POST'])
+
+        
+
         # Logout
         self.app.add_url_rule('/logout', 'logout', self.logout)
 
@@ -94,7 +104,8 @@ class BookHarmonyServer:
 
     def dashboard_page(self):
         if self.user is not None:
-            return render_template('dashboard.html', buyers=[])
+            buyers = self.manager.fetch_buyers(self.user)
+            return render_template('dashboard.html', buyers=buyers)
         else:
             return render_template('login.html')
 
@@ -271,10 +282,6 @@ class BookHarmonyServer:
 
         return render_template('login.html')
 
-    def run(self):
-        self.app.run(port="8080", debug=True)
-
-
     def verify_password(self):
         data = request.json
         input_password = data.get('password')
@@ -283,7 +290,41 @@ class BookHarmonyServer:
             return jsonify({'success': True, 'message': 'Password correct'})
         else:
             return jsonify({'success': False, 'message': 'Incorrect password'}), 401
-    
+
+    def chat_with_seller_page(self):
+        if self.seller is not None:
+            self.buyer = None
+            return render_template('chat_with_seller.html', receiver=self.seller, sender=self.user.uid)
+        else:
+            return render_template('cart.html')
+
+    def chat_with_buyer_page(self):
+        if self.buyer is not None:
+            self.seller = None
+            return render_template('chat_with_buyer.html', receiver=self.buyer, sender=self.user.uid)
+        else:
+            return render_template('cart.html')
+        
+    def chat_seller(self):
+        if self.user is not None:
+            data = request.json
+            self.seller = data.get('seller_id')
+            print(f'[*] Connecting to seller ID: {self.seller}')
+            return jsonify({'message': 'Connected to seller!'})
+        else:
+            return jsonify({'message': 'Failed to connect with seller!'})
+
+    def chat_buyer(self):
+        if self.user is not None:
+            data = request.json
+            self.buyer = data.get('buyer_id')
+            print(f'[*] Connecting to buyer ID: {self.buyer}')
+            return jsonify({'message': 'Connected to buyer!'})
+        else:
+            return jsonify({'message': 'Failed to connect with buyer!'})
+        
+    def run(self):
+        self.app.run(port="8080", debug=True)
     
 if __name__ == '__main__':
     server = BookHarmonyServer()

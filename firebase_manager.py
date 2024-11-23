@@ -201,6 +201,10 @@ class FirebaseManager:
 		ref = db.reference('Users').child(user.uid).child('Purchase')
 		return ref.get()
 	
+	def fetch_buyers(self, user):
+		buyers_ref = db.reference('Chats').child(user.uid)
+		return buyers_ref.get()
+	
 	def get_image(self, filename):
 		if os.path.exists(f'static/cover/{filename}'):
 			pass
@@ -313,3 +317,5 @@ class FirebaseManager:
 		deliver_ref.update({
 			'deliver': True
 		})
+		
+    
