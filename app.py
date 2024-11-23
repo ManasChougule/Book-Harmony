@@ -1,5 +1,6 @@
 from flask import Flask, session, request, render_template, jsonify
 from firebase_manager import FirebaseManager
+from book_recommender import BookRecommender
 import datetime
 import os
 from dotenv import load_dotenv
@@ -95,10 +96,31 @@ class BookHarmonyServer:
     def index_page(self):
         books = self.manager.fetch_books()
 
+        recommender = BookRecommender(books)
+        categories = []
+        ratings = [0]
+        recommend = None
+
+        if self.user is not None:
+            if self.manager.fetch_order_books(self.user):
+                order_books = self.manager.fetch_order_books(self.user)
+                categories.extend(order_books)
+
+            if self.manager.fetch_cart_books(self.user):
+                cart_books = self.manager.fetch_cart_books(self.user)
+                for book_id, book_data in cart_books.items():
+                    category = self.manager.fetch_category(self.user, book_id)
+                    categories.append(category)
+                
+        if categories:
+            categories = list(set(categories))
+            recommended_books = recommender.recommend_books(categories, ratings)
+            recommend = self.manager.filter_books_by_ids(books, recommended_books)
+
         for book_id, book_data in books.items():
             self.manager.get_image(book_data['filename'])
 
-        return render_template('index.html', books=books, user=self.user)
+        return render_template('index.html', books=books, user=self.user, recommend=recommend)
 
     def login_page(self):
         return render_template('login.html')

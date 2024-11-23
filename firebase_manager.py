@@ -348,3 +348,20 @@ class FirebaseManager:
 				'name': name_ref.get(),
 				'email': email_ref.get()
 			})
+			
+	def filter_books_by_ids(self, book_data, id_list):
+		filtered_books = {}
+		for book_id in id_list:
+			if book_id in book_data:
+				filtered_books[book_id] = book_data[book_id]
+		return filtered_books
+	
+	def fetch_order_books(self, user):
+		order_ref = db.reference('Users').child(user.uid).child('Orders')
+		orders = order_ref.get()
+		books = []
+		if orders:
+			for key, value in orders.items():
+				for book_id, book_data in value['books'].items():
+					books.append(book_data['category'])
+		return books
