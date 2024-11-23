@@ -1,13 +1,14 @@
 import firebase_admin
+
 from firebase_admin import credentials, auth, db, storage
+from dotenv import load_dotenv
+
 import hashlib
 import datetime
 import os
 
 import string
 import random
-
-from dotenv import load_dotenv
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -27,7 +28,7 @@ class FirebaseManager:
 	def generate_random_id(self):
 		chars = string.ascii_lowercase + string.ascii_uppercase + string.digits
 		return ''.join(random.choice(chars) for _ in range(6))
-
+	
 	def generate_sha_password(self, password):
 		sha_password = hashlib.sha256(password.encode()).hexdigest()
 		return sha_password
@@ -38,7 +39,7 @@ class FirebaseManager:
 	
 	def register_user(self, email, password, fullname, address, phone, pincode, state, city):
 		try:
-			# Create user with email and password
+			# Create user with email and password 
 			user = auth.create_user(
 				email=email,
 				password=password
@@ -72,14 +73,11 @@ class FirebaseManager:
 
 			# Retrieve data
 			data = ref.get()
-
 			if self.generate_sha_password(password) in data:
 				return user
 		except Exception as e:
-			# Redirect back to the login page with an error message
 			print(f'[*] Error {e}')
-
-		return None
+			return None
 
 	def get_user_data(self, user):
 		# Reference to your Firebase Realtime Database
@@ -205,6 +203,17 @@ class FirebaseManager:
 		buyers_ref = db.reference('Chats').child(user.uid)
 		return buyers_ref.get()
 	
+	def fetch_name(self, user):
+		user_ref = db.reference('Users').child(user.uid).child('name')
+		return user_ref.get()
+	
+	def fetch_messages(self, buyer, seller):
+		try:
+			chat_ref = db.reference('Chats').child(seller).child(buyer).child('message')
+			return chat_ref.get()
+		except:
+			return None
+	
 	def get_image(self, filename):
 		if os.path.exists(f'static/cover/{filename}'):
 			pass
@@ -319,3 +328,23 @@ class FirebaseManager:
 		})
 		
     
+	def send_message(self, buyer, seller, message, is_seller):
+		chat_ref = db.reference('Chats').child(seller).child(buyer).child('message')
+		if chat_ref.get():
+			message = chat_ref.get() + message
+		
+		if is_seller:
+			chat_ref = db.reference('Chats').child(seller).child(buyer)
+			chat_ref.update({
+				'message': message
+			})
+		else:
+			name_ref = db.reference('Users').child(buyer).child('name')
+			email_ref = db.reference('Users').child(buyer).child('email')
+
+			chat_ref = db.reference('Chats').child(seller).child(buyer)
+			chat_ref.set({
+				'message': message,
+				'name': name_ref.get(),
+				'email': email_ref.get()
+			})

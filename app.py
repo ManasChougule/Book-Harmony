@@ -83,6 +83,10 @@ class BookHarmonyServer:
         self.app.add_url_rule('/chat_with_buyer', 'chat_with_buyer', self.chat_with_buyer_page)
         self.app.add_url_rule('/chat_buyer', 'chat_buyer', self.chat_buyer, methods=['POST'])
 
+        self.app.add_url_rule('/send_message', 'send_message', self.send_message, methods=['POST'])
+        self.app.add_url_rule('/get_messages', 'get_messages', self.get_messages)
+        self.app.add_url_rule('/get_data', 'get_data', self.get_data)
+
         
 
         # Logout
@@ -322,6 +326,36 @@ class BookHarmonyServer:
             return jsonify({'message': 'Connected to buyer!'})
         else:
             return jsonify({'message': 'Failed to connect with buyer!'})
+        
+    def send_message(self):
+        data = request.json
+        message = data.get('message')
+        name = self.manager.fetch_name(self.user)
+        if self.seller is not None:
+            message = f'<div class="message sent"><p><span class="sender">{name}:</span> {message}</p></div>';
+            self.manager.send_message(self.user.uid, self.seller, message, False)
+
+        if self.buyer is not None:
+            message = f'<div class="message received"><p><span class="sender">{name}:</span> {message}</p></div>';
+            self.manager.send_message(self.buyer, self.user.uid, message, True)
+
+        return jsonify({'message': 'Message Send!'})
+    
+    def get_messages(self):
+        if self.seller is not None:
+            message = self.manager.fetch_messages(self.user.uid, self.seller)
+            return jsonify({'message': message})
+        elif self.buyer is not None:
+            message = self.manager.fetch_messages(self.buyer, self.user.uid)
+            return jsonify({'message': message})
+        else:
+            return jsonify({'message': 'Error to connect!'})
+        
+    def get_data(self):
+        if self.user is not None:
+            return self.manager.get_user_data(self.user)
+        else:
+            return render_template('login.html')
         
     def run(self):
         self.app.run(port="8080", debug=True)

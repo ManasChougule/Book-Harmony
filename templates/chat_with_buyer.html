@@ -176,5 +176,50 @@
         {% endif %}
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var messageInput = document.getElementById('messageInput');
+            var sendButton = document.getElementById('sendButton');
+
+            // Add event listener for the send button click
+            sendButton.addEventListener('click', function() {
+                var message = messageInput.value;
+
+                fetch('/send_message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: message })
+                })
+                .then(response => response.json()) 
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+                messageInput.value = '';
+            });
+
+        });
+
+        // Function to fetch messages from the server
+        function fetchMessages() {
+            fetch('/get_messages')
+                .then(response => response.json())
+                .then(data => {
+                    const chatBox = document.getElementById('chat-box');
+                    if (chatBox.innerHTML !== data.message) {
+                        chatBox.innerHTML = '';
+                        chatBox.innerHTML = data.message;
+                        chatBox.scrollTop = chatBox.scrollHeight;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching messages:', error);
+                });
+        }
+        fetchMessages();
+        setInterval(fetchMessages, 1000);
+
+    </script>
 </body>
 </html>
