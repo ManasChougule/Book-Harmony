@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'Manas'
 
 class BookHarmonyServer:
     def __init__(self):
